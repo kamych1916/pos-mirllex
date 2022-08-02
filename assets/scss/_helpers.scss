@@ -1,0 +1,41 @@
+.cursor {
+  cursor: pointer !important;
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.br--desktop {
+  @include less-than(tablet) {
+    display: none;
+  }
+}
+.br--mobile {
+  display: none;
+  @include less-than(tablet) {
+    display: block;
+  }
+}
+
+.page-transition-enter-active,
+.page-transition-leave-active {
+  transition: opacity 0.1s;
+}
+.page-transition-enter,
+.page-transition-leave-to {
+  opacity: 0;
+}
+
+
+.wrapper {
+  min-height: 100%;
+  height: 100%;
+  // height: auto;
+  max-height: 100%;
+  // overflow: hidden;
+  display: flex;
+  flex-flow: nowrap column;
+  align-items: stretch;
+  position: relative;
+  padding: 20px;
+}

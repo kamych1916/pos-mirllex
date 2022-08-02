@@ -1,0 +1,184 @@
+@mixin at-media($media) {
+  @if $media == XS or $media == SM or $media == MD or $media == LG or $media == XL {
+    @include at-size($media) {
+      @content;
+    }
+  }
+  @if $media == desktop or $media == tablet or $media == mobile {
+    @include at-device($media) {
+      @content;
+    }
+  }
+  @if $media == static or $media == fluid or $media == nogrid {
+    @include at-grid($media) {
+      @content;
+    }
+  }
+}
+
+@mixin at-size($size) {
+  @if $size == XS {
+    @media screen and (max-width: mqUnits($BREAKPOINT_XS) - 1px) {
+      @include with-layout($susy-nogrid) {
+        @content;
+      }
+    }
+  }
+  @if $size == SM {
+    @media screen and (min-width: mqUnits($BREAKPOINT_XS)) and (max-width: mqUnits($BREAKPOINT_SM) - 1px) {
+      @include with-layout($susy-nogrid) {
+        @content;
+      }
+    }
+  }
+  @if $size == MD {
+    @media screen and (min-width: mqUnits($BREAKPOINT_SM)) and (max-width: mqUnits($BREAKPOINT_MD) - 1px) {
+      @include with-layout($susy-fluid) {
+        @content;
+      }
+    }
+  }
+  @if $size == LG {
+    @media screen and (min-width: mqUnits($BREAKPOINT_MD)) and (max-width: mqUnits($BREAKPOINT_LG) - 1px) {
+      @include with-layout($susy-fluid) {
+        @content;
+      }
+    }
+  }
+  @if $size == XL {
+    @media screen and (min-width: mqUnits($BREAKPOINT_LG)) {
+      @include with-layout($susy-static) {
+        @content;
+      }
+    }
+  }
+}
+
+@mixin at-device($device) {
+  @if $device == mobile {
+    @media screen and (max-width: mqUnits($BREAKPOINT_SM) - 1px) {
+      @content;
+    }
+  }
+  @if $device == tablet {
+    @media screen and (min-width: mqUnits($BREAKPOINT_SM)) and (max-width: mqUnits($BREAKPOINT_MD) - 1px) {
+      @content;
+    }
+  }
+  @if $device == desktop {
+    @media screen and (min-width: mqUnits($BREAKPOINT_MD)) {
+      @content;
+    }
+  }
+}
+
+@mixin at-grid($grid) {
+  @if $grid == nogrid {
+    @media screen and (max-width: mqUnits($BREAKPOINT_SM) - 1px) {
+      @include with-layout($susy-nogrid) {
+        @content;
+      }
+    }
+  }
+  @if $grid == fluid {
+    @media screen and (min-width: mqUnits($BREAKPOINT_SM)) and (max-width: mqUnits($BREAKPOINT_LG) - 1px) {
+      @include with-layout($susy-fluid) {
+        @content;
+      }
+    }
+  }
+  @if $grid == static {
+    @media screen and (min-width: mqUnits($BREAKPOINT_LG)) {
+      @include with-layout($susy-static) {
+        @content;
+      }
+    }
+  }
+}
+
+@mixin less-than($value) {
+  $breakpoint: 0;
+  @if $value == XL {
+    $breakpoint: $BREAKPOINT_LG;
+  }
+  @if $value == LG {
+    $breakpoint: $BREAKPOINT_MD;
+  }
+  @if $value == MD {
+    $breakpoint: $BREAKPOINT_SM;
+  }
+  @if $value == SM {
+    $breakpoint: $BREAKPOINT_XS;
+  }
+
+  @if $value == mobile {
+    $breakpoint: $BREAKPOINT_SM;
+  }
+  @if $value == tablet {
+    $breakpoint: $BREAKPOINT_MD;
+  }
+  @if $value == laptop {
+    $breakpoint: $BREAKPOINT_LAPTOP;
+  }
+  @if $value == laptop_l {
+    $breakpoint: $BREAKPOINT_LAPTOP_L;
+  }
+  @if $value == laptop_xl {
+    $breakpoint: $BREAKPOINT_LAPTOP_XL;
+  }
+
+  @if $value == static {
+    $breakpoint: $BREAKPOINT_LG;
+  }
+  @if $value == fluid {
+    $breakpoint: $BREAKPOINT_SM;
+  }
+
+  @media screen and (max-width: $breakpoint - 1px) {
+    @content;
+  }
+}
+
+@mixin more-than($value) {
+  $breakpoint: 0;
+  @if $value == LG {
+    $breakpoint: $BREAKPOINT_LG;
+  }
+  @if $value == MD {
+    $breakpoint: $BREAKPOINT_MD;
+  }
+  @if $value == SM {
+    $breakpoint: $BREAKPOINT_SM;
+  }
+  @if $value == XS {
+    $breakpoint: $BREAKPOINT_XS;
+  }
+
+  @if $value == mobile {
+    $breakpoint: $BREAKPOINT_SM;
+  }
+  @if $value == tablet {
+    $breakpoint: $BREAKPOINT_MD;
+  }
+  @if $value == laptop {
+    $breakpoint: $BREAKPOINT_LAPTOP;
+  }
+  @if $value == laptop_l {
+    $breakpoint: $BREAKPOINT_LAPTOP_L;
+  }
+  @if $value == laptop_xl {
+    $breakpoint: $BREAKPOINT_LAPTOP_XL;
+  }
+
+  @if $value == fluid {
+    $breakpoint: $BREAKPOINT_LG;
+  }
+  @if $value == nogrid {
+    $breakpoint: $BREAKPOINT_SM;
+  }
+
+  // @media screen and (min-width: mqUnits($breakpoint) - 1px) {
+  @media screen and (min-width: $breakpoint - 1px) {
+    @content;
+  }
+}
