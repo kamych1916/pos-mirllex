@@ -6,7 +6,7 @@
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 20px;
+          margin-bottom: 10px;
         "
       >
         <div style="color: #0c872e; text-transform: capitalize">
@@ -17,7 +17,7 @@
         </div>
       </div>
 
-      <slot name="content" />
+      <slot />
     </form>
   </div>
 </template>

@@ -60,7 +60,7 @@ export default {
       },
       withCredentials: true,
     },
-    baseURL: 'https://spacefarm.ai/server'
+    baseURL: 'http://87.249.44.28:8005/api/'
   },
 
   auth: {

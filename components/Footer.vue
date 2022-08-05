@@ -1,25 +1,41 @@
 <template>
   <div class="footer">
-    <div class="footer-item">
+    <NuxtLink
+      to="/"
+      class="footer-item"
+      exact-active-class="footer-item--active"
+    >
       <span>
         <i class="bx bx-notepad"></i>
       </span>
-    </div>
-    <div class="footer-item footer-item--active">
+    </NuxtLink>
+    <NuxtLink
+      to="/storage"
+      class="footer-item"
+      exact-active-class="footer-item--active"
+    >
       <span>
         <i class="bx bx-store"></i>
       </span>
-    </div>
-    <div class="footer-item">
+    </NuxtLink>
+    <NuxtLink
+      to="/analytics"
+      class="footer-item"
+      exact-active-class="footer-item--active"
+    >
       <span>
         <i class="bx bx-line-chart"></i>
       </span>
-    </div>
-    <div class="footer-item">
+    </NuxtLink>
+    <NuxtLink
+      to="/settings"
+      class="footer-item"
+      exact-active-class="footer-item--active"
+    >
       <span>
         <i class="bx bxs-cog"></i>
       </span>
-    </div>
+    </NuxtLink>
   </div>
 </template>
 
