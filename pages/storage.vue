@@ -7,7 +7,11 @@
         </div>
         <div class="storage-menu__categories">
           <div
-            @click="modal_add_category = true"
+            @click="
+              modal_add_category = true;
+              form_category.name = null;
+              form_category.id = null;
+            "
             class="storage-menu__category"
           >
             <i class="bx bx-plus"></i>
@@ -18,17 +22,15 @@
             class="storage-menu__category"
             @click="getProducts(category._id)"
           >
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                padding-bottom: 10px;
-              "
-            >
-              <i class="bx bx-trash"></i>
+            <div class="storage-menu__category-wrapper">
+              <!-- <i class="bx bx-trash"></i> -->
               <i
-                @click.self="modal_change_category = true"
-                class="bx bx-cog"
+                @click.stop="
+                  modal_change_category = true;
+                  form_category.name = category.name;
+                  form_category.id = category._id;
+                "
+                class="bx bx-cog storage-menu__category-icon"
               ></i>
             </div>
             <div>
@@ -40,14 +42,33 @@
           </div> -->
         </div>
         <div v-if="category_id" class="storage-menu__products">
-          <div @click="modal_add_products = true" class="storage-menu__product">
+          <div
+            @click="
+              modal_add_product = true;
+              form_product.name = null;
+              form_product.price = null;
+              form_product.quantity = null;
+              form_product.id = null;
+            "
+            class="storage-menu__product"
+          >
             <i class="bx bx-plus"></i>
           </div>
           <div
             v-for="product in products"
-            :key="product._id"
+            :key="product.id"
             class="storage-menu__product"
+            @click="
+              modal_change_product = true;
+              form_product.name = product.name;
+              form_product.price = product.price;
+              form_product.quantity = product.quantity;
+              form_product.id = product.id;
+            "
           >
+            <div class="storage-menu__product-wrapper">
+              <i class="bx bx-cog storage-menu__product-icon"></i>
+            </div>
             {{ product.name }}
           </div>
         </div>
@@ -58,41 +79,27 @@
       title="Создание категории"
       v-if="modal_add_category"
       @close="modal_add_category = false"
+      class="storage-modal"
     >
       <form @submit.prevent="createCategory()">
-        <input
-          v-model="form_category.name"
-          type="text"
-          placeholder="Название категории"
-          required
-        />
+        <span> Название </span>
+        <input v-model="form_category.name" type="text" required />
         <button type="submit" style="width: 100%">Создать</button>
       </form>
     </Modal>
     <Modal
       title="Создание продутка"
-      v-if="modal_add_products"
-      @close="modal_add_products = false"
+      v-if="modal_add_product"
+      @close="modal_add_product = false"
+      class="storage-modal"
     >
       <form @submit.prevent="createProduct()">
-        <input
-          v-model="form_product.name"
-          type="text"
-          placeholder="Название продукта"
-          required
-        />
-        <input
-          v-model="form_product.price"
-          type="number"
-          placeholder="Стоимость продукта"
-          required
-        />
-        <input
-          v-model="form_product.quantity"
-          type="number"
-          placeholder="Количетсво продукта"
-          required
-        />
+        <span> Название </span>
+        <input v-model="form_product.name" type="text" required />
+        <span> Цена </span>
+        <input v-model="form_product.price" type="number" required />
+        <span> Количество </span>
+        <input v-model="form_product.quantity" type="number" required />
         <button type="submit" style="width: 100%">Создать</button>
       </form>
     </Modal>
@@ -101,15 +108,45 @@
       title="Редактирование категории"
       v-if="modal_change_category"
       @close="modal_change_category = false"
+      class="storage-modal"
     >
-      <form @submit.prevent="createCategory()">
-        <input
-          v-model="form_category.name"
-          type="text"
-          placeholder="Название категории"
-          required
-        />
-        <button type="submit" style="width: 100%">Создать</button>
+      <form @submit.prevent="changeCategory()">
+        <span> Название </span>
+        <input v-model="form_category.name" type="text" required />
+        <div style="display: flex; justify-content: space-between; gap: 20px">
+          <button @click="deleteCategory()" style="width: 100%">Удалить</button>
+          <button
+            type="submit"
+            style="width: 100%; background-color: rgb(177 224 172)"
+          >
+            Изменить
+          </button>
+        </div>
+      </form>
+    </Modal>
+
+    <Modal
+      title="Редактирование продукта"
+      v-if="modal_change_product"
+      @close="modal_change_product = false"
+      class="storage-modal"
+    >
+      <form @submit.prevent="changeProduct()">
+        <span> Название </span>
+        <input v-model="form_product.name" type="text" required />
+        <span> Цена </span>
+        <input v-model="form_product.price" type="text" required />
+        <span> Количество </span>
+        <input v-model="form_product.quantity" type="text" required />
+        <div style="display: flex; justify-content: space-between; gap: 20px">
+          <button @click="deleteProduct()" style="width: 100%">Удалить</button>
+          <button
+            type="submit"
+            style="width: 100%; background-color: rgb(177 224 172)"
+          >
+            Изменить
+          </button>
+        </div>
       </form>
     </Modal>
   </div>
@@ -126,16 +163,19 @@ export default {
 
       form_category: {
         name: null,
+        id: null,
       },
       form_product: {
         name: null,
         price: null,
         quantity: null,
+        id: null,
       },
 
       modal_add_category: false,
-      modal_add_products: false,
+      modal_add_product: false,
       modal_change_category: false,
+      modal_change_product: false,
     };
   },
   fetchOnSever: false,
@@ -173,7 +213,7 @@ export default {
         .$post("categories", this.form_category)
         .then((res) => {
           this.modal_add_category = false;
-          this.categories.unshift(res);
+          this.categories.push(res);
         })
         .catch((err) => {
           console.log(err);
@@ -183,8 +223,79 @@ export default {
       this.$axios
         .$post(`${this.category_id}/products`, this.form_product)
         .then((res) => {
-          this.modal_add_products = false;
-          this.products.unshift(res);
+          this.modal_add_product = false;
+          this.products.push(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+    changeCategory() {
+      this.$axios
+        .$patch("categories", this.form_category)
+        .then((res) => {
+          let objIndex = this.categories.findIndex(
+            (obj) => obj._id == this.form_category.id
+          );
+          let categoryName = this.form_category.name;
+          this.categories[objIndex].name = categoryName;
+
+          this.modal_change_category = false;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    changeProduct() {
+      this.$axios
+        .$patch(`${this.category_id}/products`, this.form_product)
+        .then((res) => {
+          let objIndex = this.products.findIndex(
+            (obj) => obj.id == this.form_product.id
+          );
+          let productName = this.form_product.name;
+          let productPrice = this.form_product.price;
+          let productQuantity = this.form_product.quantity;
+
+          this.products[objIndex].name = productName;
+          this.products[objIndex].price = productPrice;
+          this.products[objIndex].quantity = productQuantity;
+
+          this.modal_change_product = false;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+    deleteCategory() {
+      this.$axios
+        .$post("delete_categories", { id: this.form_category.id })
+        .then((res) => {
+          let objIndex = this.categories.findIndex(
+            (obj) => obj.id == this.form_category.id
+          );
+          this.categories.splice(objIndex, 1);
+
+          this.modal_change_category = false;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    deleteProduct() {
+      this.$axios
+        .$post(`${this.category_id}/delete_products`, {
+          id: this.form_product.id,
+        })
+        .then((res) => {
+          let objIndex = this.products.findIndex(
+            (obj) => obj._id == this.form_product.id
+          );
+          this.products.splice(objIndex, 1);
+
+          this.modal_change_product = false;
         })
         .catch((err) => {
           console.log(err);
@@ -231,12 +342,29 @@ export default {
     background: #e6e6e6;
     margin-right: 20px;
     margin-bottom: 10px;
-    padding: 10px 25px 20px;
+    padding: 20px 25px 20px;
     border-radius: 10px;
+    position: relative;
+    transition: transform ease 0.2s;
+    &:active {
+      transform: scale(0.9);
+    }
   }
   &-menu__category--active {
     background: #77a648;
     color: #fff;
+  }
+  &-menu__category-wrapper {
+    padding-bottom: 10px;
+  }
+  &-menu__category-icon {
+    position: absolute;
+    z-index: 2;
+    right: 0;
+    top: 0;
+    padding: 5px 10px;
+    background: rgb(223, 223, 223);
+    border-radius: 10px;
   }
   &-menu__products {
     display: grid;
@@ -260,6 +388,26 @@ export default {
     background: #e6e6e6;
     max-height: 100px;
     border-radius: 10px;
+    position: relative;
+    transition: transform ease 0.2s;
+    &:active {
+      transform: scale(0.9);
+    }
+  }
+  &-menu__product-icon {
+    position: absolute;
+    z-index: 2;
+    right: 0;
+    top: 0;
+    padding: 5px 10px;
+    background: rgb(223, 223, 223);
+    border-radius: 10px;
+  }
+  &-modal {
+    span {
+      font-size: 14px;
+      opacity: 0.5;
+    }
   }
 }
 </style>
