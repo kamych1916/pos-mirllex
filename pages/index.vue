@@ -4,71 +4,66 @@
       <div class="order-menu">
         <div class="order-menu__form">
           <input
+            @input="searchEvent()"
             type="text"
             placeholder="поиск товара"
+            v-model="search"
             style="margin-right: 20px"
           />
-          <input type="text" placeholder="выбор стола" />
+          <select v-model="table">
+            <option disabled value="">Выбор стола</option>
+            <option
+              v-for="item in tables"
+              :key="item.lavel"
+              :value="item.value"
+            >
+              {{ item.label }}
+            </option>
+          </select>
         </div>
         <div class="order-menu__categories">
-          <div class="order-menu__category">супы</div>
-          <div class="order-menu__category">фастфуды</div>
-          <div class="order-menu__category order-menu__category--active">
-            пиццы
+          <div
+            v-for="item in store"
+            :key="item._id"
+            :class="[
+              'order-menu__category',
+              item._id === category_id ? 'order-menu__category--active' : null,
+            ]"
+            @click="
+              category_id = item._id;
+              products = item.products;
+              search = null;
+            "
+          >
+            {{ item.name }}
           </div>
-          <div class="order-menu__category">напитки</div>
-          <div class="order-menu__category">основные блюда</div>
-          <div class="order-menu__category">салаты</div>
-          <div class="order-menu__category">десерты</div>
-          <div class="order-menu__category">закуски</div>
-          <div class="order-menu__category">к пиву</div>
-          <div class="order-menu__category">супы</div>
-          <div class="order-menu__category">фастфуды</div>
-          <div class="order-menu__category">напитки</div>
-          <div class="order-menu__category">основные блюда</div>
-          <div class="order-menu__category">салаты</div>
-          <div class="order-menu__category">десерты</div>
-          <div class="order-menu__category">закуски</div>
-          <div class="order-menu__category">к пиву</div>
         </div>
         <div class="order-menu__products">
-          <div class="order-menu__product">Пицца в сковороде</div>
-          <div class="order-menu__product">Маргарита</div>
-          <div class="order-menu__product">4 сезона</div>
-          <div class="order-menu__product">Фермерская</div>
-          <div class="order-menu__product">Римская пицца</div>
-          <div class="order-menu__product">Папайя</div>
-          <div class="order-menu__product">Вальтеллина</div>
-          <div class="order-menu__product">Деревенская</div>
-          <div class="order-menu__product">Немецкая</div>
-          <div class="order-menu__product">Трехцветная</div>
-          <div class="order-menu__product">Бисмарк</div>
-          <div class="order-menu__product">Грибная</div>
-          <div class="order-menu__product">Мимоза</div>
-          <div class="order-menu__product">С пармезаном</div>
-          <div class="order-menu__product">Крестьянская</div>
-          <div class="order-menu__product">Средиземноморская</div>
-          <div class="order-menu__product">Пицца в сковороде</div>
-          <div class="order-menu__product">Маргарита</div>
-          <div class="order-menu__product">4 сезона</div>
-          <div class="order-menu__product">Фермерская</div>
-          <div class="order-menu__product">Римская пицца</div>
-          <div class="order-menu__product">Папайя</div>
-          <div class="order-menu__product">Вальтеллина</div>
-          <div class="order-menu__product">Деревенская</div>
-          <div class="order-menu__product">Немецкая</div>
-          <div class="order-menu__product">Трехцветная</div>
-          <div class="order-menu__product">Бисмарк</div>
-          <div class="order-menu__product">Грибная</div>
-          <div class="order-menu__product">Мимоза</div>
-          <div class="order-menu__product">С пармезаном</div>
-          <div class="order-menu__product">Крестьянская</div>
-          <div class="order-menu__product">Средиземноморская</div>
+          <div
+            v-for="product in products"
+            :key="product.id"
+            @click="addToBuscket(product)"
+            class="order-menu__product"
+          >
+            <div>
+              {{ product.name }}
+            </div>
+            <div style="display: flex; justify-content: space-between">
+              <span>
+                <p v-if="product.is_quantity">кол.: {{ product.quantity }}</p>
+              </span>
+              <span>{{ product.price }} р.</span>
+            </div>
+          </div>
         </div>
       </div>
       <div class="order-buscket">
         <div class="order-buscket__bag">
-          <div class="order-buscket__article">
+          <div
+            v-for="item in buscket"
+            :key="item.id"
+            class="order-buscket__article"
+          >
             <div
               style="
                 display: flex;
@@ -76,17 +71,18 @@
                 margin-bottom: 10px;
               "
             >
-              <span>159 р.</span>
-              <i class="bx bx-trash"></i>
+              <span>{{ item.price }} р.</span>
+              <i @click="productDelete(item.id)" class="bx bx-trash"></i>
             </div>
-            <span> Вегетарианский сэндвич </span>
+            <span>{{ item.name }}</span>
             <div class="order-buscket__article-count">
-              <i class="bx bx-plus"></i>
-              <span>1</span>
-              <i class="bx bx-minus"></i>
+              <i @click="productCountMinus(item)" class="bx bx-minus"></i>
+              <span>{{ item.count }}</span>
+              <i @click="productCountPlus(item)" class="bx bx-plus"></i>
             </div>
           </div>
-          <div class="order-buscket__article">
+
+          <!-- <div class="order-buscket__article">
             <div
               style="
                 display: flex;
@@ -139,14 +135,32 @@
               <span>1</span>
               <i class="bx bx-minus"></i>
             </div>
-          </div>
+          </div> -->
         </div>
         <div class="order-buscket__checkout">
-          <input type="text" placeholder="Сотрудник" />
-          <input type="text" placeholder="Бонусы" />
+          <select v-model="employee">
+            <option disabled value="">Сотрудник</option>
+            <option
+              v-for="item in employees"
+              :key="item.lavel"
+              :value="item.value"
+            >
+              {{ item.label }}
+            </option>
+          </select>
+          <select @change="eventBonus()" v-model="bonus">
+            <option disabled value="">Бонусы</option>
+            <option
+              v-for="item in bonuses"
+              :key="item.lavel"
+              :value="item.value"
+            >
+              {{ item.label }}
+            </option>
+          </select>
 
-          <p>Итого: 324 р.</p>
-          <button type="button">ОФОРМИТЬ</button>
+          <p>Итого: {{ total_bonus }} р.</p>
+          <button @click="sendBuscket()">ОФОРМИТЬ</button>
         </div>
       </div>
     </div>
@@ -155,7 +169,187 @@
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      category_id: null,
+
+      categories: [],
+      products: [],
+      products_store: [],
+
+      search: null,
+
+      tables: [],
+      table: "",
+      employees: [],
+      employee: "",
+      bonuses: [],
+      bonus: "",
+
+      total_sum: 0,
+      total_bonus: 0,
+
+      buscket: [],
+
+      store: [],
+    };
+  },
+  fetchOnSever: false,
+  fetch() {
+    this.getData();
+  },
+
+  methods: {
+    getData() {
+      this.$axios
+        .$get("store")
+        .then((res) => {
+          res.store.forEach((category) => {
+            category.products.forEach((product) => {
+              this.products_store.push({
+                category_id: category._id,
+                ...product,
+              });
+            });
+          });
+          this.store = res.store;
+          this.tables = res.inputs.tables;
+          this.employees = res.inputs.employees;
+          this.bonuses = res.inputs.bonuses;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    searchEvent() {
+      this.category_id = null;
+      if (this.search.length > 0) {
+        this.products = this.products_store.filter((product) => {
+          return product.name.toLowerCase().includes(this.search.toLowerCase());
+        });
+        if (this.products.length > 0) {
+          this.category_id = this.products[0].category_id;
+        }
+      } else {
+        this.products = [];
+      }
+    },
+    addToBuscket(product) {
+      if (this.buscket.length > 0) {
+        let isProductFind = false;
+        this.buscket.forEach((item) => {
+          if (product.id === item.id) {
+            isProductFind = true;
+            if (item.is_quantity) {
+              if (item.quantity !== item.count) {
+                item.count += 1;
+                this.total_sum += item.price;
+                this.eventBonus();
+              }
+            } else {
+              item.count += 1;
+              this.total_sum += item.price;
+              this.eventBonus();
+            }
+          }
+        });
+        if (!isProductFind) {
+          this.buscket.push({ count: 1, ...product });
+          this.total_sum += product.price;
+          this.eventBonus();
+        }
+      } else {
+        this.buscket.push({ count: 1, ...product });
+        this.total_sum = product.price;
+        this.total_bonus = this.total_sum;
+        this.eventBonus();
+      }
+    },
+    productCountMinus(item) {
+      if (item.count === 1) {
+        this.buscket = this.buscket.filter((product) => {
+          return product.id === item.id ? false : true;
+        });
+      } else {
+        this.buscket.forEach((product) => {
+          if (product.id === item.id) product.count -= 1;
+        });
+      }
+      this.total_sum -= item.price;
+      this.eventBonus();
+    },
+    productCountPlus(item) {
+      this.buscket.forEach((product) => {
+        if (product.id === item.id) {
+          if (item.is_quantity) {
+            if (item.quantity !== product.count) {
+              this.total_sum += item.price;
+              product.count += 1;
+            }
+          } else {
+            this.total_sum += item.price;
+            product.count += 1;
+          }
+        }
+      });
+      this.eventBonus();
+    },
+    productDelete(id) {
+      this.buscket = this.buscket.filter((product) => {
+        if (product.id === id) {
+          this.total_sum -= product.price * product.count;
+          return false;
+        } else {
+          return true;
+        }
+      });
+      this.eventBonus();
+    },
+    eventBonus() {
+      let isBonusFind = false;
+      this.bonuses.forEach((item) => {
+        if (this.bonus === item.value) {
+          isBonusFind = true;
+          if (item.type === "number") {
+            this.total_bonus = this.total_sum - item.data;
+          } else {
+            this.total_bonus = this.total_sum * ((100 - item.data) / 100);
+          }
+        }
+        if (!isBonusFind) {
+          this.total_bonus = this.total_sum;
+        }
+      });
+    },
+    sendBuscket() {
+      if (this.buscket.length > 0) {
+        this.$axios
+          .$post("order", {
+            busket: this.buscket,
+            table: this.table,
+            bonus: this.bonus,
+            employee: this.employee,
+            total: this.total_bonus,
+          })
+          .then((res) => {
+            this.buscket = [];
+            this.table = "";
+            this.bonus = "";
+            this.employee = "";
+            this.total_bonus = 0;
+            this.total_sum = 0;
+            this.getData();
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        alert("Корзина пуста");
+      }
+    },
+  },
+};
 </script>
 
 <style lang="scss">
@@ -165,7 +359,8 @@ export default {};
     height: 90%;
   }
   &-menu {
-    width: 80%;
+    flex: 4;
+    width: 100%;
     margin-right: 20px;
     min-height: 100%;
     height: 100%;
@@ -177,7 +372,8 @@ export default {};
   }
   &-menu__form {
     display: flex;
-    input {
+    input,
+    select {
       flex: 1;
       background: #e6e6e6;
       padding: 14px;
@@ -200,6 +396,10 @@ export default {};
     justify-content: center;
     align-items: center;
     border-radius: 10px;
+    transition: all ease 0.2s;
+    &:active {
+      transform: scale(0.9);
+    }
   }
   &-menu__category--active {
     background: #77a648;
@@ -220,16 +420,23 @@ export default {};
   }
   &-menu__product {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 40px 0;
+    flex-direction: column;
+    justify-content: space-between;
+    // align-items: center;
+    // text-align: center;
+    padding: 14px;
+    height: 140px;
     background: #e6e6e6;
     max-height: 100px;
     border-radius: 10px;
+    transition: transform ease 0.2s;
+    &:active {
+      transform: scale(0.9);
+    }
   }
 
   &-buscket {
+    flex: 1;
     width: 100%;
     height: 100%;
     display: flex;
@@ -260,6 +467,10 @@ export default {};
       align-items: center;
       padding: 5px 10px;
       background: #e6e6e6;
+      transition: transform ease 0.2s;
+      &:active {
+        transform: scale(0.7);
+      }
       &:nth-child(1) {
         border-top-left-radius: 10px;
         border-bottom-left-radius: 10px;
@@ -288,7 +499,7 @@ export default {};
     flex-direction: column;
     justify-content: space-between;
     padding: 10px;
-    input {
+    select {
       background: #f2f2f2;
       padding: 14px;
       border-radius: 10px;

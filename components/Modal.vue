@@ -79,7 +79,7 @@ export default {
   transition: all 0.25s ease;
   -webkit-box-shadow: 0 5px 30px 0 rgba(0, 0, 0, 0.5);
   box-shadow: 0 5px 30px 0 rgba(0, 0, 0, 0.5);
-  max-width: 550px;
+  max-width: 350px;
   max-height: 600px;
   margin: auto;
   padding: 20px;

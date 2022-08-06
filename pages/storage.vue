@@ -19,11 +19,15 @@
           <div
             v-for="category in categories"
             :key="category._id"
-            class="storage-menu__category"
+            :class="[
+              'storage-menu__category',
+              category._id === category_id
+                ? 'storage-menu__category--active'
+                : null,
+            ]"
             @click="getProducts(category._id)"
           >
             <div class="storage-menu__category-wrapper">
-              <!-- <i class="bx bx-trash"></i> -->
               <i
                 @click.stop="
                   modal_change_category = true;
@@ -48,6 +52,7 @@
               form_product.name = null;
               form_product.price = null;
               form_product.quantity = null;
+              form_product.is_quantity = false;
               form_product.id = null;
             "
             class="storage-menu__product"
@@ -63,6 +68,7 @@
               form_product.name = product.name;
               form_product.price = product.price;
               form_product.quantity = product.quantity;
+              form_product.is_quantity = product.is_quantity;
               form_product.id = product.id;
             "
           >
@@ -98,8 +104,31 @@
         <input v-model="form_product.name" type="text" required />
         <span> Цена </span>
         <input v-model="form_product.price" type="number" required />
-        <span> Количество </span>
-        <input v-model="form_product.quantity" type="number" required />
+        <span>Товар с количеством ?</span>
+        <div class="storage-modal__product-quantity">
+          <span
+            @click="form_product.is_quantity = true"
+            :class="[
+              form_product.is_quantity
+                ? 'storage-modal__product-quantity--active'
+                : null,
+            ]"
+            >Да</span
+          >
+          <span
+            @click="form_product.is_quantity = false"
+            :class="[
+              !form_product.is_quantity
+                ? 'storage-modal__product-quantity--active'
+                : null,
+            ]"
+            >Нет</span
+          >
+        </div>
+        <div v-if="form_product.is_quantity">
+          <span> Количество </span>
+          <input v-model="form_product.quantity" type="number" required />
+        </div>
         <button type="submit" style="width: 100%">Создать</button>
       </form>
     </Modal>
@@ -136,8 +165,31 @@
         <input v-model="form_product.name" type="text" required />
         <span> Цена </span>
         <input v-model="form_product.price" type="text" required />
-        <span> Количество </span>
-        <input v-model="form_product.quantity" type="text" required />
+        <span>Товар с количеством ?</span>
+        <div class="storage-modal__product-quantity">
+          <span
+            @click="form_product.is_quantity = true"
+            :class="[
+              form_product.is_quantity
+                ? 'storage-modal__product-quantity--active'
+                : null,
+            ]"
+            >Да</span
+          >
+          <span
+            @click="form_product.is_quantity = false"
+            :class="[
+              !form_product.is_quantity
+                ? 'storage-modal__product-quantity--active'
+                : null,
+            ]"
+            >Нет</span
+          >
+        </div>
+        <div v-if="form_product.is_quantity">
+          <span> Количество </span>
+          <input v-model="form_product.quantity" type="text" required />
+        </div>
         <div style="display: flex; justify-content: space-between; gap: 20px">
           <button @click="deleteProduct()" style="width: 100%">Удалить</button>
           <button
@@ -169,6 +221,7 @@ export default {
         name: null,
         price: null,
         quantity: null,
+        is_quantity: false,
         id: null,
       },
 
@@ -200,8 +253,8 @@ export default {
       this.$axios
         .$get(`${id}/products`)
         .then((res) => {
-          this.products = res;
           this.category_id = id;
+          this.products = res;
         })
         .catch((err) => {
           console.log(err);
@@ -257,10 +310,12 @@ export default {
           let productName = this.form_product.name;
           let productPrice = this.form_product.price;
           let productQuantity = this.form_product.quantity;
+          let productIsQuantity = this.form_product.is_quantity;
 
           this.products[objIndex].name = productName;
           this.products[objIndex].price = productPrice;
           this.products[objIndex].quantity = productQuantity;
+          this.products[objIndex].is_quantity = productIsQuantity;
 
           this.modal_change_product = false;
         })
@@ -338,14 +393,14 @@ export default {
     margin-top: 20px;
   }
   &-menu__category {
-    display: inline-block;
+    display: inline-block;  
     background: #e6e6e6;
     margin-right: 20px;
     margin-bottom: 10px;
     padding: 20px 25px 20px;
     border-radius: 10px;
     position: relative;
-    transition: transform ease 0.2s;
+    transition: all ease 0.2s;
     &:active {
       transform: scale(0.9);
     }
@@ -353,6 +408,9 @@ export default {
   &-menu__category--active {
     background: #77a648;
     color: #fff;
+    i {
+      color: #000;
+    }
   }
   &-menu__category-wrapper {
     padding-bottom: 10px;
@@ -408,6 +466,25 @@ export default {
       font-size: 14px;
       opacity: 0.5;
     }
+  }
+  &-modal__product-quantity {
+    display: flex;
+    margin-top: 10px;
+    margin-bottom: 30px;
+    span {
+      width: 50px;
+      padding: 10px 5px;
+      background: #ccc;
+      text-align: center;
+      transition: transform ease 0.6s;
+      &:active {
+        transform: scale(0.7);
+      }
+    }
+  }
+  &-modal__product-quantity--active {
+    color: #fff;
+    background: #77a648 !important;
   }
 }
 </style>
