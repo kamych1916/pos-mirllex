@@ -303,6 +303,12 @@ export default {
   &-container {
     display: flex;
     height: 90%;
+    @include less-than(tablet) {
+      // flex-direction: column;
+      overflow: auto;
+      white-space: nowrap;
+      padding-bottom: 10px;
+    }
   }
   &-menu {
     flex: 4;
@@ -315,15 +321,23 @@ export default {
     flex-flow: nowrap column;
     align-items: stretch;
     position: relative;
+    @include less-than(tablet) {
+      flex: 5;
+      min-width: 100%;
+    }
   }
   &-menu__form {
     display: flex;
     input,
     select {
       flex: 1;
+      width: 50%;
       background: #e6e6e6;
       padding: 14px;
       border-radius: 10px;
+      @include less-than(tablet) {
+        width: 50%;
+      }
     }
   }
   &-menu__categories {
@@ -346,6 +360,11 @@ export default {
     &:active {
       transform: scale(0.9);
     }
+    @include less-than(tablet) {
+      &:active {
+        transform: scale(0.7);
+      }
+    }
   }
   &-menu__category--active {
     background: #77a648;
@@ -361,8 +380,13 @@ export default {
     // white-space: nowrap;
     height: 74%;
     max-height: 100%;
-    margin-top: auto;
+    // margin-top: auto;
+    padding-top: 10px;
     padding-right: 10px;
+    @include less-than(tablet) {
+      display: flex;
+      flex-direction: column;
+    }
   }
   &-menu__product {
     display: flex;
@@ -376,9 +400,16 @@ export default {
     background: #e6e6e6;
     max-height: 100px;
     border-radius: 10px;
+    white-space: normal;
     transition: transform ease 0.2s;
     &:active {
       transform: scale(0.9);
+    }
+    @include less-than(tablet) {
+      flex: 1;
+      &:active {
+        transform: scale(0.7);
+      }
     }
   }
 
@@ -397,6 +428,10 @@ export default {
     border-radius: 10px;
     padding: 10px;
     overflow: auto;
+    @include less-than(tablet) {
+      width: 280px;
+      height: 60%;
+    }
   }
   &-buscket__article {
     width: 100%;
@@ -404,6 +439,7 @@ export default {
     border-radius: 10px;
     margin-bottom: 10px;
     background: #f2f2f2;
+    white-space: normal;
   }
   &-buscket__article-count {
     display: flex;
@@ -446,15 +482,25 @@ export default {
     flex-direction: column;
     justify-content: space-between;
     padding: 10px;
+    @include less-than(tablet) {
+      height: 40%;
+    }
     select {
       background: #f2f2f2;
       padding: 14px;
       border-radius: 10px;
       width: 100%;
+      @include less-than(tablet) {
+        margin-bottom: 10px;
+      }
     }
     p {
       margin-top: 20px;
       font-weight: 600;
+      @include less-than(tablet) {
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
     }
     button {
       background: #77a648;

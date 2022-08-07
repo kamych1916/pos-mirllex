@@ -14,7 +14,9 @@
             "
             class="storage-menu__category"
           >
-            <i class="bx bx-plus"></i>
+            <div style="display: flex; align-items: center; height: 100%">
+              <i class="bx bx-plus"></i>
+            </div>
           </div>
           <div
             v-for="category in categories"
@@ -438,8 +440,13 @@ export default {
     // white-space: nowrap;
     height: 74%;
     max-height: 100%;
-    margin-top: auto;
+    padding-top: 10px;
+    // margin-top: auto;
     padding-right: 10px;
+    @include less-than(tablet) {
+      display: flex;
+      flex-direction: column;
+    }
   }
   &-menu__product {
     display: flex;
@@ -454,6 +461,12 @@ export default {
     transition: transform ease 0.2s;
     &:active {
       transform: scale(0.9);
+    }
+    @include less-than(tablet) {
+      flex: 1;
+      &:active {
+        transform: scale(0.7);
+      }
     }
   }
   &-menu__product-icon {
