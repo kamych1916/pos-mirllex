@@ -81,61 +81,6 @@
               <i @click="productCountPlus(item)" class="bx bx-plus"></i>
             </div>
           </div>
-
-          <!-- <div class="order-buscket__article">
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 10px;
-              "
-            >
-              <span>60 р.</span>
-              <i class="bx bx-trash"></i>
-            </div>
-            <span> Самса </span>
-            <div class="order-buscket__article-count">
-              <i class="bx bx-plus"></i>
-              <span>2</span>
-              <i class="bx bx-minus"></i>
-            </div>
-          </div>
-          <div class="order-buscket__article">
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 10px;
-              "
-            >
-              <span>45 р.</span>
-              <i class="bx bx-trash"></i>
-            </div>
-            <span> Кола 0.5</span>
-            <div class="order-buscket__article-count">
-              <i class="bx bx-plus"></i>
-              <span>1</span>
-              <i class="bx bx-minus"></i>
-            </div>
-          </div>
-          <div class="order-buscket__article">
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 10px;
-              "
-            >
-              <span>90 р.</span>
-              <i class="bx bx-trash"></i>
-            </div>
-            <span> Ментос </span>
-            <div class="order-buscket__article-count">
-              <i class="bx bx-plus"></i>
-              <span>1</span>
-              <i class="bx bx-minus"></i>
-            </div>
-          </div> -->
         </div>
         <div class="order-buscket__checkout">
           <select v-model="employee">
@@ -170,6 +115,7 @@
 
 <script>
 export default {
+  middleware: ["auth"],
   data() {
     return {
       category_id: null,
@@ -408,7 +354,7 @@ export default {
   &-menu__products {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: max-content;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
     column-gap: 20px;
     row-gap: 20px;
     overflow: auto;
@@ -425,7 +371,8 @@ export default {
     // align-items: center;
     // text-align: center;
     padding: 14px;
-    height: 140px;
+    height: 100%;
+    min-height: 140px;
     background: #e6e6e6;
     max-height: 100px;
     border-radius: 10px;

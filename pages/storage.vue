@@ -143,7 +143,9 @@
         <span> Название </span>
         <input v-model="form_category.name" type="text" required />
         <div style="display: flex; justify-content: space-between; gap: 20px">
-          <button @click="deleteCategory()" style="width: 100%">Удалить</button>
+          <button @click="deleteCategory()" type="button" style="width: 100%">
+            Удалить
+          </button>
           <button
             type="submit"
             style="width: 100%; background-color: rgb(177 224 172)"
@@ -191,7 +193,9 @@
           <input v-model="form_product.quantity" type="text" required />
         </div>
         <div style="display: flex; justify-content: space-between; gap: 20px">
-          <button @click="deleteProduct()" style="width: 100%">Удалить</button>
+          <button @click="deleteProduct()" type="button" style="width: 100%">
+            Удалить
+          </button>
           <button
             type="submit"
             style="width: 100%; background-color: rgb(177 224 172)"
@@ -206,6 +210,7 @@
 
 <script>
 export default {
+  middleware: ["auth"],
   data() {
     return {
       category_id: null,
@@ -293,7 +298,6 @@ export default {
           );
           let categoryName = this.form_category.name;
           this.categories[objIndex].name = categoryName;
-
           this.modal_change_category = false;
         })
         .catch((err) => {
@@ -329,7 +333,7 @@ export default {
         .$post("delete_categories", { id: this.form_category.id })
         .then((res) => {
           let objIndex = this.categories.findIndex(
-            (obj) => obj.id == this.form_category.id
+            (obj) => obj._id == this.form_category.id
           );
           this.categories.splice(objIndex, 1);
 
@@ -393,7 +397,7 @@ export default {
     margin-top: 20px;
   }
   &-menu__category {
-    display: inline-block;  
+    display: inline-block;
     background: #e6e6e6;
     margin-right: 20px;
     margin-bottom: 10px;
@@ -427,7 +431,7 @@ export default {
   &-menu__products {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: max-content;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
     column-gap: 20px;
     row-gap: 20px;
     overflow: auto;

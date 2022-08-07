@@ -1,74 +1,58 @@
 <template>
   <div class="wrapper">
     <div class="settings">
-      <div class="settings-tables settings-container">
-        <div class="settings-container__title">Столы</div>
-        <div class="settings-container__wrapper">
-          <div class="settings-container__add">Добавить</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-          <div class="settings-container__item">1</div>
-        </div>
-      </div>
-      <div class="settings-employees settings-container">
-        <div class="settings-container__title">Сотрудники</div>
-        <div class="settings-container__wrapper">
-          <div class="settings-container__add">Добавить</div>
-          <div class="settings-container__item">2</div>
-        </div>
-      </div>
-      <div class="settings-bonus settings-container">
-        <div class="settings-container__title">Бонусы</div>
-        <div class="settings-container__wrapper">
-          <div class="settings-container__add">Добавить</div>
-          <div class="settings-container__item">3</div>
-        </div>
-      </div>
+      <settings-tables
+        v-if="tables.length > 0"
+        :data="tables"
+      ></settings-tables>
+      <settings-employees
+        v-if="employees.length > 0"
+        :data="employees"
+      ></settings-employees>
+      <settings-bonuses
+        v-if="bonuses.length > 0"
+        :data="bonuses"
+      ></settings-bonuses>
     </div>
     <Footer style="margin-top: auto"></Footer>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  middleware: ["auth"],
+  data() {
+    return {
+      bonuses: [],
+      employees: [],
+      tables: [],
+    };
+  },
+  fetchOnSever: false,
+  fetch() {
+    this.getData();
+  },
+  methods: {
+    getData() {
+      this.$axios
+        .$get("settings")
+        .then((res) => {
+          this.bonuses = res.bonuses;
+          this.employees = res.employees;
+          this.tables = res.tables;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+  },
+};
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .settings {
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
   white-space: nowrap;
   margin-top: 20px;
   height: 100%;
@@ -80,9 +64,9 @@ export default {};
     min-height: 100%;
     max-height: 100%;
     display: inline-block;
-    margin-right: 10px;
     overflow: auto;
     white-space: nowrap;
+    padding: 0 10px;
 
     @include less-than(tablet) {
       margin-right: 0px;
@@ -108,14 +92,24 @@ export default {};
     background: #f2f2f2;
     border-radius: 12px;
     text-align: center;
-    padding: 10px;
+    padding: 15px 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   &-container__item {
     background: #f2f2f2;
     border-radius: 12px;
     text-align: center;
-    padding: 10px;
+    padding: 25px 10px;
     margin-top: 20px;
+  }
+
+  &-modal {
+    span {
+      font-size: 14px;
+      opacity: 0.5;
+    }
   }
 }
 </style>
