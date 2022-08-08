@@ -1,14 +1,245 @@
 <template>
-  <div class="wrapper">
-    Аналитика
-    <Footer style="margin-top: auto"></Footer>
+  <div class="analytics" v-if="main_data && popular_products">
+    <div class="analytics-today">
+      <div
+        class="analytics-today__item"
+        style="font-size: 17px; font-weight: 500"
+      >
+        <div>Cегодня,</div>
+        {{ new Date().toLocaleDateString() }}
+      </div>
+      <div class="analytics-today__item">
+        <div class="analytics-today__item-title">{{ main_data.revenue }}</div>
+        <span>выручка</span>
+      </div>
+      <div class="analytics-today__item">
+        <div class="analytics-today__item-title">
+          {{ main_data.checks }}
+        </div>
+        <span>кол. чеков</span>
+      </div>
+      <div class="analytics-today__item">
+        <div class="analytics-today__item-title">
+          {{ main_data.visitors }}
+        </div>
+        <span>кол. посетителей</span>
+      </div>
+      <div class="analytics-today__item">
+        <div class="analytics-today__item-title">
+          {{ main_data.average_check }}
+        </div>
+        <span>средний чек</span>
+      </div>
+    </div>
+
+    <div>
+      <vueApexCharts
+        ref="chart_stat"
+        :width="chartWidth"
+        :height="chartHeight"
+        :options="chartOptions"
+        :series="series"
+      ></vueApexCharts>
+    </div>
+    <div class="analytics-popular">
+      <div class="analytics-popular__title">Популярные товары</div>
+      <table class="analytics-popular__table">
+        <thead align="left">
+          <tr>
+            <th>Наименование</th>
+            <th>Количество</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="product in popular_products">
+            <td>{{ product.name }}</td>
+            <td>{{ product.count }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <Footer> </Footer>
   </div>
 </template>
 
 <script>
 export default {
   middleware: ["auth"],
+  components: {
+    vueApexCharts: () => import("vue-apexcharts"),
+  },
+  data() {
+    return {
+      main_data: null,
+      popular_products: [],
+
+      chartWidth: "100%",
+      chartHeight: "400px",
+      series: [
+        {
+          name: "series1",
+          data: [],
+        },
+      ],
+      chartOptions: {
+        chart: {
+          type: "area",
+          zoom: {
+            enabled: false,
+          },
+          toolbar: {
+            show: false,
+          },
+          foreColor: "#A3A3A3",
+        },
+        dataLabels: {
+          enabled: false,
+        },
+        stroke: {
+          width: 2,
+          colors: ["#77A648"],
+          curve: "smooth",
+        },
+        grid: {
+          yaxis: {
+            lines: {
+              show: true,
+              offsetX: 0,
+              offsetY: 0,
+            },
+          },
+          xaxis: {
+            lines: {
+              show: true,
+              offsetX: 0,
+              offsetY: 0,
+            },
+          },
+        },
+        xaxis: {
+          categories: [],
+        },
+        tooltip: {
+          enabled: false,
+          enabledOnSeries: undefined,
+        },
+        fill: {
+          type: "gradient",
+          colors: ["#bcd6a3", "#bcd6a3"],
+        },
+        markers: {
+          size: 5,
+          colors: ["#77A648"],
+        },
+      },
+    };
+  },
+  fetchOnSever: false,
+  fetch() {
+    this.getMainData();
+    this.getChart();
+  },
+  methods: {
+    getChart() {
+      this.$axios
+        .$get("chart")
+        .then((res) => {
+          console.log(res);
+          this.series[0].data = res.revenue.data;
+          this.series[0].name = "";
+          this.chartOptions.xaxis.categories = res.revenue.categories;
+          this.$refs.chart_stat.refresh();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    getMainData() {
+      this.$axios
+        .$get("statistics_today")
+        .then((res) => {
+          this.main_data = res;
+          for (const [key, value] of Object.entries(res.popular_products)) {
+            this.popular_products.push({
+              name: key,
+              count: value,
+            });
+          }
+          this.popular_products.push(...this.popular_products);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+  },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss">
+.analytics {
+  position: relative;
+  overflow: auto;
+  white-space: nowrap;
+  padding: 20px;
+  padding-bottom: 150px;
+  &-today {
+    overflow: auto;
+    white-space: nowrap;
+    background: #e6e6e6;
+    border-radius: 10px;
+    width: fit-content;
+  }
+  &-today__item {
+    display: inline-block;
+    padding: 14px;
+    margin-right: 40px;
+    span {
+      color: rgb(116, 116, 116);
+      font-size: 14px;
+    }
+  }
+  &-today__item-title {
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  &-popular {
+    margin-top: 20px;
+    background: #e6e6e6;
+    padding: 14px;
+    width: fit-content;
+    border-radius: 10px;
+    overflow: auto;
+    white-space: nowrap;
+  }
+  &-popular__title {
+    font-size: 16px;
+    font-weight: 500;
+  }
+  &-popular__table {
+    margin-top: 20px;
+
+    tr {
+      background: #f2f2f2;
+    }
+    td,
+    th {
+      padding: 15px;
+    }
+  }
+  .footer {
+    background: #e6e6e6;
+    width: 100%;
+    z-index: 2;
+    position: fixed;
+    justify-content: center;
+    bottom: 0;
+    left: 0;
+    padding-bottom: calc(constant(safe-area-inset-bottom));
+    padding-bottom: calc(env(safe-area-inset-bottom));
+    &-item {
+      margin: 0 14px;
+    }
+  }
+}
+</style>
