@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <div>
+    <div class="analytics-chart">
       <vueApexCharts
         ref="chart_stat"
         :width="chartWidth"
@@ -73,7 +73,7 @@ export default {
       main_data: null,
       popular_products: [],
 
-      chartWidth: "100%",
+      chartWidth: "150%",
       chartHeight: "400px",
       series: [
         {
@@ -86,6 +86,7 @@ export default {
           type: "area",
           zoom: {
             enabled: false,
+            autoScaleYaxis: true,
           },
           toolbar: {
             show: false,
@@ -93,7 +94,18 @@ export default {
           foreColor: "#A3A3A3",
         },
         dataLabels: {
-          enabled: false,
+          enabled: true,
+          style: {
+            colors: ["#77a648"],
+          },
+          background: {
+            enabled: true,
+            foreColor: "#fff",
+            padding: 4,
+            borderRadius: 6,
+            borderWidth: 1,
+            borderColor: "#fff",
+          },
         },
         stroke: {
           width: 2,
@@ -148,6 +160,9 @@ export default {
           this.series[0].data = res.revenue.data;
           this.series[0].name = "";
           this.chartOptions.xaxis.categories = res.revenue.categories;
+          if (screen.width < 600) {
+            this.chartWidth = "1400px";
+          }
           this.$refs.chart_stat.refresh();
         })
         .catch((err) => {
@@ -240,6 +255,8 @@ export default {
     &-item {
       margin: 0 14px;
     }
+  }
+  &-chart {
   }
 }
 </style>
