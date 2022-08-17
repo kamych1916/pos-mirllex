@@ -41,8 +41,8 @@
         :series="series"
       ></vueApexCharts>
     </div>
+    <div class="analytics-popular__title">Популярные товары</div>
     <div class="analytics-popular">
-      <div class="analytics-popular__title">Популярные товары</div>
       <table class="analytics-popular__table">
         <thead align="left">
           <tr>
@@ -73,7 +73,7 @@ export default {
       main_data: null,
       popular_products: [],
 
-      chartWidth: "150%",
+      chartWidth: "100%",
       chartHeight: "400px",
       series: [
         {
@@ -200,9 +200,13 @@ export default {
   &-today {
     overflow: auto;
     white-space: nowrap;
-    background: #e6e6e6;
+    background: #fff;
+    box-shadow: 0 0 50px #e6e6e6;
     border-radius: 10px;
     width: fit-content;
+    @include less-than(tablet) {
+      width: 100%;
+    }
   }
   &-today__item {
     display: inline-block;
@@ -219,23 +223,22 @@ export default {
   }
 
   &-popular {
-    margin-top: 20px;
-    background: #e6e6e6;
-    padding: 14px;
-    width: fit-content;
     border-radius: 10px;
+    width: 100%;
     overflow: auto;
     white-space: nowrap;
   }
   &-popular__title {
+    margin-top: 30px;
     font-size: 16px;
     font-weight: 500;
   }
   &-popular__table {
+    width: 100%;
     margin-top: 20px;
 
     tr {
-      background: #f2f2f2;
+      background: #fff;
     }
     td,
     th {
@@ -257,6 +260,12 @@ export default {
     }
   }
   &-chart {
+    margin-top: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 50px #e6e6e6;
+    overflow: auto;
+    white-space: nowrap;
   }
 }
 </style>
