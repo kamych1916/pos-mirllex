@@ -33,6 +33,47 @@
     </div>
 
     <div class="analytics-chart">
+      <div class="analytics-chart__header">
+        <p>Выручка за -</p>
+
+        <!-- :locale-data="{ firstDay: 1, format: 'dd-mm-yyyy' }" -->
+        <date-range-picker
+          ref="picker"
+          :locale-data="{
+            format: 'mm-dd-yyyy',
+            separator: ' - ',
+            weekLabel: 'Камбулат',
+            customRangeLabel: 'Custom Range',
+            daysOfWeek: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+            monthNames: [
+              'Январь',
+              'Февраль',
+              'Март',
+              'Апрель',
+              'Май',
+              'Июнь',
+              'Июль',
+              'Август',
+              'Сентябрь',
+              'Октябрь',
+              'Ноябрь',
+              'Декабрь',
+            ],
+          }"
+          :ranges="ranges"
+          v-model="dateRange"
+          :opens="'center'"
+          :autoApply="true"
+          :singleDatePicker="'range'"
+          :appendToBody="true"
+          :lang="'zh'"
+          class="analytics-chart__wrapper"
+        >
+          <template v-slot:input="picker" style="min-width: 350px">
+            {{ picker.startDate | date }} - {{ picker.endDate | date }}
+          </template>
+        </date-range-picker>
+      </div>
       <vueApexCharts
         ref="chart_stat"
         :width="chartWidth"
@@ -40,6 +81,24 @@
         :options="chartOptions"
         :series="series"
       ></vueApexCharts>
+      <div v-if="chartData" class="analytics-range__item-wrapper">
+        <div
+          @click="
+            chartValue = item.label;
+            changeChart(item.label);
+          "
+          v-for="item in chartData.value"
+          :class="[
+            'analytics-range__item',
+            item.label === chartValue ? 'analytics-range__item--active' : null,
+          ]"
+        >
+          <div class="analytics-range__item-title">
+            {{ item.value }}
+          </div>
+          <span>{{ item.label }}</span>
+        </div>
+      </div>
     </div>
     <div class="analytics-popular__title">Популярные товары</div>
     <div class="analytics-popular">
@@ -63,13 +122,45 @@
 </template>
 
 <script>
+import DateRangePicker from "vue2-daterange-picker";
+import "vue2-daterange-picker/dist/vue2-daterange-picker.css";
+
 export default {
   middleware: ["auth"],
   components: {
     vueApexCharts: () => import("vue-apexcharts"),
+    DateRangePicker,
+  },
+  filters: {
+    date(val) {
+      return new Intl.DateTimeFormat("ru-RU").format(val);
+    },
   },
   data() {
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    const days6 = new Date();
+    days6.setDate(today.getDate() - 6);
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + 6);
     return {
+      ranges: {
+        "Сегодня ": [today, today],
+        "Вчера ": [yesterday, yesterday],
+        Неделя: [days6, today],
+        "Этот месяц": [
+          new Date(today.getFullYear(), today.getMonth(), 1),
+          today,
+        ],
+        "Прошлый месяц": [
+          new Date(today.getFullYear(), today.getMonth() - 1, 1),
+          new Date(today.getFullYear(), today.getMonth(), 0),
+        ],
+      },
+      dateRange: { startDate, endDate },
+
       main_data: null,
       popular_products: [],
 
@@ -144,25 +235,49 @@ export default {
           colors: ["#77A648"],
         },
       },
+
+      chartData: null,
+      chartValue: "Выручка",
     };
+  },
+  watch: {
+    dateRange(val) {
+      var options = {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        timezone: "UTC",
+      };
+      this.getChart(
+        val.startDate.toLocaleString("ru", options),
+        val.endDate.toLocaleString("ru", options)
+      );
+    },
   },
   fetchOnSever: false,
   fetch() {
     this.getMainData();
     this.getChart();
   },
+
   methods: {
-    getChart() {
+    changeChart(label) {
+      this.chartValue = label;
+      console.log(label);
+    },
+    getChart(start = "", end = "") {
       this.$axios
-        .$get("chart")
+        .$get(`chart?startDate=${start}&endDate=${end}`)
         .then((res) => {
-          console.log(res);
-          this.series[0].data = res.revenue.data;
+          this.series[0].data = res.charts.revenue.data;
           this.series[0].name = "";
-          this.chartOptions.xaxis.categories = res.revenue.categories;
+          this.chartOptions.xaxis.categories = res.charts.revenue.categories;
           if (screen.width < 600) {
             this.chartWidth = "1400px";
           }
+          this.chartData = res;
+          console.log(res);
+
           this.$refs.chart_stat.refresh();
         })
         .catch((err) => {
@@ -208,6 +323,7 @@ export default {
       width: 100%;
     }
   }
+
   &-today__item {
     display: inline-block;
     padding: 14px;
@@ -266,6 +382,65 @@ export default {
     box-shadow: 0 0 50px #e6e6e6;
     overflow: auto;
     white-space: nowrap;
+  }
+
+  &-chart__header {
+    display: flex;
+    align-items: center;
+
+    p {
+      margin: 14px;
+      margin-right: 0px;
+      font-size: 17px;
+      font-weight: 500;
+    }
+  }
+  &-chart__wrapper {
+    .form-control {
+      border: none;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 2px;
+      border-radius: 4px;
+    }
+  }
+  &-range__item-wrapper {
+    padding-left: 10px;
+    padding-bottom: 10px;
+  }
+
+  &-range__item {
+    display: inline-block;
+    padding: 14px;
+    margin-right: 14px;
+    background: rgb(241, 241, 241);
+    border-radius: 14px;
+    width: 200px;
+    transition: ease all 0.2s;
+    cursor: pointer;
+    span {
+      color: rgb(116, 116, 116);
+      font-size: 14px;
+    }
+  }
+  &-range__item--active {
+    background: #77a648;
+    color: #fff;
+    span {
+      color: #fff;
+    }
+  }
+  &-range__item-title {
+    font-size: 18px;
+    font-weight: 500;
+  }
+}
+
+.daterangepicker {
+  min-width: auto !important;
+  .calendars {
+    @include less-than(tablet) {
+      display: block !important;
+    }
   }
 }
 </style>
