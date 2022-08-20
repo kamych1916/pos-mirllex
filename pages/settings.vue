@@ -1,18 +1,9 @@
 <template>
   <div class="wrapper">
-    <div class="settings">
-      <settings-tables
-        v-if="tables.length > 0"
-        :data="tables"
-      ></settings-tables>
-      <settings-employees
-        v-if="employees.length > 0"
-        :data="employees"
-      ></settings-employees>
-      <settings-bonuses
-        v-if="bonuses.length > 0"
-        :data="bonuses"
-      ></settings-bonuses>
+    <div class="settings" v-if="isLoadData">
+      <settings-tables :data="tables"></settings-tables>
+      <settings-employees :data="employees"></settings-employees>
+      <settings-bonuses :data="bonuses"></settings-bonuses>
     </div>
     <Footer style="margin-top: auto"></Footer>
   </div>
@@ -26,6 +17,7 @@ export default {
       bonuses: [],
       employees: [],
       tables: [],
+      isLoadData: false,
     };
   },
   fetchOnSever: false,
@@ -40,6 +32,8 @@ export default {
           this.bonuses = res.bonuses;
           this.employees = res.employees;
           this.tables = res.tables;
+          this.isLoadData = true;
+          console.log(res);
         })
         .catch((err) => {
           console.log(err);
