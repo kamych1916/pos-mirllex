@@ -57,7 +57,7 @@
           </div>
         </div>
       </div>
-      <div class="order-buscket">
+      <div class="order-buscket" id="print">
         <div class="order-buscket__bag">
           <div
             v-for="item in buscket"
@@ -83,6 +83,14 @@
           </div>
         </div>
         <div class="order-buscket__checkout">
+          <div class="order-buscket__checkout-count-wrapper">
+            <p>Количество гостей</p>
+            <div class="order-buscket__checkout-count">
+              <i @click="client_quantity -= 1" class="bx bx-minus"></i>
+              <span>{{ client_quantity }}</span>
+              <i @click="client_quantity += 1" class="bx bx-plus"></i>
+            </div>
+          </div>
           <select v-model="employee">
             <option disabled value="">Сотрудник</option>
             <option
@@ -93,6 +101,7 @@
               {{ item.label }}
             </option>
           </select>
+
           <select @change="eventBonus()" v-model="bonus">
             <option disabled value="">Бонусы</option>
             <option
@@ -102,10 +111,23 @@
             >
               {{ item.label }}
             </option>
+            <option value="null">Нет бонусов</option>
+          </select>
+          <select v-model="type_payment">
+            <option disabled value="">Тип оплаты</option>
+            <option
+              v-for="item in type_payment_list"
+              :key="item.lavel"
+              :value="item.value"
+            >
+              {{ item.label }}
+            </option>
           </select>
 
-          <p>Итого: {{ total_bonus }} р.</p>
-          <button @click="sendBuscket()">ОФОРМИТЬ</button>
+          <button @click="sendBuscket()">
+            <p>ОФОРМИТЬ</p>
+            <div>{{ total_bonus }} р.</div>
+          </button>
         </div>
       </div>
     </div>
@@ -132,6 +154,18 @@ export default {
       employee: "",
       bonuses: [],
       bonus: "",
+      client_quantity: 1,
+      type_payment: "",
+      type_payment_list: [
+        {
+          value: 1,
+          label: "Наличка",
+        },
+        {
+          value: 0,
+          label: "Безнал",
+        },
+      ],
 
       total_sum: 0,
       total_bonus: 0,
@@ -144,6 +178,12 @@ export default {
   fetchOnSever: false,
   fetch() {
     this.getData();
+  },
+
+  watch: {
+    client_quantity(val) {
+      val < 1 ? (this.client_quantity = 1) : null;
+    },
   },
 
   methods: {
@@ -277,6 +317,8 @@ export default {
             bonus: this.bonus,
             employee: this.employee,
             total: this.total_bonus,
+            client_quantity: this.client_quantity,
+            type_payment: this.type_payment,
           })
           .then((res) => {
             this.buscket = [];
@@ -285,7 +327,10 @@ export default {
             this.employee = "";
             this.total_bonus = 0;
             this.total_sum = 0;
+            this.type_payment = "";
+            this.client_quantity = 1;
             this.getData();
+            window.print();
           })
           .catch((err) => {
             console.log(err);
@@ -474,7 +519,7 @@ export default {
   }
 
   &-buscket__checkout {
-    height: 35%;
+    // height: 35%;
     background: #e6e6e6;
     border-radius: 10px;
     width: 100%;
@@ -483,30 +528,73 @@ export default {
     justify-content: space-between;
     padding: 10px;
     @include less-than(tablet) {
-      height: 40%;
+      // height: 40%;
     }
-    select {
+    select,
+    input {
       background: #f2f2f2;
       padding: 14px;
       border-radius: 10px;
       width: 100%;
+      margin-bottom: 10px;
       @include less-than(tablet) {
         margin-bottom: 10px;
       }
     }
-    p {
-      margin-top: 20px;
-      font-weight: 600;
-      @include less-than(tablet) {
-        margin-top: 10px;
-        margin-bottom: 10px;
-      }
-    }
+    // p {
+    //   text-align: center;
+    //   margin-bottom: 10px;
+    //   font-weight: 600;
+    // }
     button {
+      display: flex;
+      justify-content: space-between;
       background: #77a648;
       color: #fff;
-      padding: 10px 0;
+      padding: 14px;
       border-radius: 10px;
+      margin-top: 10px;
+    }
+  }
+  &-buscket__checkout-count-wrapper {
+    margin-bottom: 10px;
+
+    p {
+      margin-bottom: 5px;
+      text-align: center;
+      font-size: 14px;
+      color: rgb(110, 110, 110);
+    }
+  }
+
+  &-buscket__checkout-count {
+    display: flex;
+    justify-content: space-between;
+    i {
+      display: flex;
+      align-items: center;
+      padding: 5px 10px;
+      background: #f2f2f2;
+      transition: transform ease 0.2s;
+      &:active {
+        transform: scale(0.7);
+      }
+      &:nth-child(1) {
+        border-top-left-radius: 7px;
+        border-bottom-left-radius: 7px;
+      }
+      &:nth-last-child(1) {
+        border-top-right-radius: 7px;
+        border-bottom-right-radius: 7px;
+      }
+    }
+    span {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #d7d7d7;
+      text-align: center;
     }
   }
 }
