@@ -9,11 +9,22 @@
           margin-bottom: 10px;
         "
       >
-        <div style="color: #0c872e; text-transform: capitalize">
+        <div style="text-transform: capitalize; font-size: 18px">
           {{ title }}
         </div>
         <div class="modal-close" @click="$emit('close')">
-          <i class="bx bx-x-circle"></i>
+          <!-- <i class="bx bx-x"></i> -->
+          <svg
+            width="30px"
+            height="30px"
+            viewBox="0 0 256 256"
+            id="Flat"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M202.82861,197.17188a3.99991,3.99991,0,1,1-5.65722,5.65624L128,133.65723,58.82861,202.82812a3.99991,3.99991,0,0,1-5.65722-5.65624L122.343,128,53.17139,58.82812a3.99991,3.99991,0,0,1,5.65722-5.65624L128,122.34277l69.17139-69.17089a3.99991,3.99991,0,0,1,5.65722,5.65624L133.657,128Z"
+            />
+          </svg>
         </div>
       </div>
 
@@ -79,7 +90,7 @@ export default {
   transition: all 0.25s ease;
   -webkit-box-shadow: 0 5px 30px 0 rgba(0, 0, 0, 0.5);
   box-shadow: 0 5px 30px 0 rgba(0, 0, 0, 0.5);
-  max-width: 350px;
+  max-width: 550px;
   max-height: 600px;
   margin: auto;
   padding: 20px;
@@ -110,9 +121,10 @@ export default {
 
 .modal-close {
   border-radius: 12px;
-  padding: 6px 20px;
-  background: #0c872e;
-  color: #fff;
+  // padding: 6px 20px;
+  // background: #0c872e;
+  font-size: 20px;
+  color: #000;
   width: fit-content;
   text-align: end;
   cursor: pointer;

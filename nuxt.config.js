@@ -51,6 +51,12 @@ export default {
 
   pageTransition: 'page-transition',
 
+  plugins: [
+    {
+      src: '~/plugins/Paper.js',
+      mode: 'client',
+    },
+  ],
 
   axios: {
     headers: {

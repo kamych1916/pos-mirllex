@@ -330,7 +330,7 @@ export default {
             this.type_payment = "";
             this.client_quantity = 1;
             this.getData();
-            window.print();
+            // window.print();
           })
           .catch((err) => {
             console.log(err);

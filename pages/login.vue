@@ -35,7 +35,7 @@ export default {
       error: false,
       showPassword: false,
       user: {
-        email: "",
+        login: "",
         password: "",
       },
     };
