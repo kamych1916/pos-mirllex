@@ -52,7 +52,9 @@
               <span>
                 <p v-if="product.is_quantity">кол.: {{ product.quantity }}</p>
               </span>
-              <span>{{ product.price }} р.</span>
+              <span style="color: #77a648; font-weight: 600"
+                >{{ product.price }} р.</span
+              >
             </div>
           </div>
         </div>
@@ -71,7 +73,9 @@
                 margin-bottom: 10px;
               "
             >
-              <span>{{ item.price }} р.</span>
+              <span style="color: #77a648; font-weight: 600">
+                {{ item.price }} р.
+              </span>
               <i @click="productDelete(item.id)" class="bx bx-trash"></i>
             </div>
             <span>{{ item.name }}</span>
@@ -126,7 +130,7 @@
 
           <button @click="sendBuscket()">
             <p>ОФОРМИТЬ</p>
-            <div>{{ total_bonus }} р.</div>
+            <div style="font-weight: 600">{{ total_bonus }} р.</div>
           </button>
         </div>
       </div>
@@ -310,16 +314,17 @@ export default {
     },
     sendBuscket() {
       if (this.buscket.length > 0) {
+        let busketData = {
+          busket: this.buscket,
+          table: this.table,
+          bonus: this.bonus,
+          employee: this.employee,
+          total: this.total_bonus,
+          client_quantity: this.client_quantity,
+          type_payment: this.type_payment,
+        };
         this.$axios
-          .$post("order", {
-            busket: this.buscket,
-            table: this.table,
-            bonus: this.bonus,
-            employee: this.employee,
-            total: this.total_bonus,
-            client_quantity: this.client_quantity,
-            type_payment: this.type_payment,
-          })
+          .$post("order", busketData)
           .then((res) => {
             this.buscket = [];
             this.table = "";
@@ -330,7 +335,8 @@ export default {
             this.type_payment = "";
             this.client_quantity = 1;
             this.getData();
-            // window.print();
+            this.$store.commit("busketData/changeBusketData", busketData);
+            this.$router.push("/print");
           })
           .catch((err) => {
             console.log(err);
@@ -402,6 +408,7 @@ export default {
     align-items: center;
     border-radius: 10px;
     transition: all ease 0.2s;
+    cursor: pointer;
     &:active {
       transform: scale(0.9);
     }
@@ -437,8 +444,6 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    // align-items: center;
-    // text-align: center;
     padding: 14px;
     height: 100%;
     min-height: 140px;
@@ -447,6 +452,7 @@ export default {
     border-radius: 10px;
     white-space: normal;
     transition: transform ease 0.2s;
+    cursor: pointer;
     &:active {
       transform: scale(0.9);
     }
@@ -493,9 +499,11 @@ export default {
     i {
       display: flex;
       align-items: center;
-      padding: 5px 10px;
+      padding: 8px 20px;
       background: #e6e6e6;
       transition: transform ease 0.2s;
+      cursor: pointer;
+
       &:active {
         transform: scale(0.7);
       }
@@ -519,7 +527,6 @@ export default {
   }
 
   &-buscket__checkout {
-    // height: 35%;
     background: #e6e6e6;
     border-radius: 10px;
     width: 100%;
@@ -527,9 +534,6 @@ export default {
     flex-direction: column;
     justify-content: space-between;
     padding: 10px;
-    @include less-than(tablet) {
-      // height: 40%;
-    }
     select,
     input {
       background: #f2f2f2;
@@ -541,11 +545,6 @@ export default {
         margin-bottom: 10px;
       }
     }
-    // p {
-    //   text-align: center;
-    //   margin-bottom: 10px;
-    //   font-weight: 600;
-    // }
     button {
       display: flex;
       justify-content: space-between;
@@ -554,6 +553,7 @@ export default {
       padding: 14px;
       border-radius: 10px;
       margin-top: 10px;
+      cursor: pointer;
     }
   }
   &-buscket__checkout-count-wrapper {
@@ -573,9 +573,11 @@ export default {
     i {
       display: flex;
       align-items: center;
-      padding: 5px 10px;
+      padding: 8px 20px;
       background: #f2f2f2;
       transition: transform ease 0.2s;
+      cursor: pointer;
+
       &:active {
         transform: scale(0.7);
       }

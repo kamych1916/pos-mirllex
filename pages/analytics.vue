@@ -182,7 +182,7 @@
                 </button>
               </td>
               <td style="width: 0; text-align: center">
-                <button class="analytics-info__table-btn">
+                <button @click="print()" class="analytics-info__table-btn">
                   <i class="bx bx-printer"></i>
                 </button>
               </td>
@@ -190,7 +190,7 @@
           </tbody>
         </table>
         <pagination
-          :totalPages="pageSizePopular"
+          :totalPages="pageSizeChecks"
           :currentPage="currentPage"
           @pagechanged="onPageChange"
         />
@@ -353,6 +353,7 @@ export default {
       isChecks: false,
       checkBusketModal: false,
       checkBusket: null,
+      pageSizeChecks: null,
 
       currentPage: 1,
     };
@@ -447,8 +448,8 @@ export default {
       this.$axios
         .$get("order")
         .then((res) => {
-          console.log(res);
           this.checks = res;
+          this.pageSizeChecks = Math.round(this.checks.length / 10);
         })
         .catch((err) => {
           console.log(err);
@@ -460,6 +461,9 @@ export default {
     openCheckBusketModal(busket) {
       this.checkBusketModal = true;
       this.checkBusket = busket;
+    },
+    print() {
+      window.print();
     },
   },
 };
