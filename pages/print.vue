@@ -4,7 +4,7 @@
       <img
         src="https://parzibyte.github.io/print-receipt-thermal-printer/logo.png"
       />
-      <h1>BUNDES</h1>
+      <h1>Ресторан</h1>
     </div>
 
     <table>
@@ -16,12 +16,16 @@
       </thead>
       <tbody>
         <tr>
+          <td style="width: 20%">Номер чека</td>
+          <td>{{ store.id }}</td>
+        </tr>
+        <tr>
           <td style="width: 20%">Официант</td>
           <td>{{ store.employee }}</td>
         </tr>
         <tr>
           <td style="width: 20%">Дата</td>
-          <td>{{ store.employee }}</td>
+          <td>{{ store.date }}</td>
         </tr>
         <tr>
           <td style="width: 20%">Стол</td>
@@ -58,19 +62,34 @@
     <div class="print-dashed"></div>
 
     <div class="print-total">
+      <div class="print-total__left">Подытог</div>
+      <div class="print-total__dotted"></div>
+      <div class="print-total__right">{{ store.subtotal }}</div>
+    </div>
+    <div class="print-total">
+      <div class="print-total__left">Скидка</div>
+      <div class="print-total__dotted"></div>
+      <div class="print-total__right">{{ store.bonus }}</div>
+    </div>
+    <p style="margin-top: 0.2cm">Оплата</p>
+    <div class="print-total">
+      <div class="print-total__left">Наличными</div>
+      <div class="print-total__dotted"></div>
+      <div class="print-total__right">
+        {{ store.type_payment === 1 ? store.subtotal : "0.00" }}
+      </div>
+    </div>
+    <div class="print-total">
+      <div class="print-total__left">Без нал.</div>
+      <div class="print-total__dotted"></div>
+      <div class="print-total__right">
+        {{ store.type_payment === 0 ? store.subtotal : "0.00" }}
+      </div>
+    </div>
+    <div class="print-total" style="font-weight: 600">
       <div class="print-total__left">Итого</div>
       <div class="print-total__dotted"></div>
       <div class="print-total__right">{{ store.total }}</div>
-    </div>
-    <div class="print-total">
-      <div class="print-total__left">Обслуживание</div>
-      <div class="print-total__dotted"></div>
-      <div class="print-total__right">200</div>
-    </div>
-    <div class="print-total">
-      <div class="print-total__left">К оплате</div>
-      <div class="print-total__dotted"></div>
-      <div class="print-total__right">100</div>
     </div>
     <!-- <button @click="print()">print</button> -->
   </div>
@@ -101,7 +120,7 @@ export default {
       setTimeout(function () {
         vm.$router.push("/");
         window.close();
-      }, 100);
+      }, 200);
     }, 100);
   },
 };
@@ -110,6 +129,7 @@ export default {
 <style lang="scss">
 .print {
   width: 100%;
+  font-size: 0.3cm;
   &-header {
     display: flex;
     justify-content: center;

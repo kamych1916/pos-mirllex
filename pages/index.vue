@@ -335,7 +335,7 @@ export default {
             this.type_payment = "";
             this.client_quantity = 1;
             this.getData();
-            this.$store.commit("busketData/changeBusketData", busketData);
+            this.$store.commit("busketData/changeBusketData", res);
             this.$router.push("/print");
           })
           .catch((err) => {
