@@ -10,7 +10,13 @@
             v-model="search"
             style="margin-right: 20px"
           />
-          <select v-model="table">
+          <input
+            type="datetime-local"
+            placeholder="Выберите время"
+            style="margin-right: 20px"
+            v-model="datetime"
+          />
+          <select v-model="table" style="margin-right: 20px">
             <option disabled value="">Выбор стола</option>
             <option
               v-for="item in tables"
@@ -20,6 +26,9 @@
               {{ item.label }}
             </option>
           </select>
+          <button type="button" @click="modal_desc = true">
+            Комментарий к заказу ..
+          </button>
         </div>
         <div class="order-menu__categories">
           <div
@@ -42,7 +51,7 @@
           <div
             v-for="product in products"
             :key="product.id"
-            @click="addToBuscket(product)"
+            @click="addToBusket(product)"
             class="order-menu__product"
           >
             <div>
@@ -59,12 +68,12 @@
           </div>
         </div>
       </div>
-      <div class="order-buscket" id="print">
-        <div class="order-buscket__bag">
+      <div class="order-busket" id="print">
+        <div class="order-busket__bag">
           <div
-            v-for="item in buscket"
+            v-for="item in busket"
             :key="item.id"
-            class="order-buscket__article"
+            class="order-busket__article"
           >
             <div
               style="
@@ -79,17 +88,17 @@
               <i @click="productDelete(item.id)" class="bx bx-trash"></i>
             </div>
             <span>{{ item.name }}</span>
-            <div class="order-buscket__article-count">
+            <div class="order-busket__article-count">
               <i @click="productCountMinus(item)" class="bx bx-minus"></i>
               <span>{{ item.count }}</span>
               <i @click="productCountPlus(item)" class="bx bx-plus"></i>
             </div>
           </div>
         </div>
-        <div class="order-buscket__checkout">
-          <div class="order-buscket__checkout-count-wrapper">
+        <div class="order-busket__checkout">
+          <div class="order-busket__checkout-count-wrapper">
             <p>Количество гостей</p>
-            <div class="order-buscket__checkout-count">
+            <div class="order-busket__checkout-count">
               <i @click="client_quantity -= 1" class="bx bx-minus"></i>
               <span>{{ client_quantity }}</span>
               <i @click="client_quantity += 1" class="bx bx-plus"></i>
@@ -110,7 +119,7 @@
             <option disabled value="">Бонусы</option>
             <option
               v-for="item in bonuses"
-              :key="item.lavel"
+              :key="item.label"
               :value="item.value"
             >
               {{ item.label }}
@@ -128,12 +137,45 @@
             </option>
           </select>
 
-          <button @click="sendBuscket()">
+          <button
+            type="button"
+            class="order-busket__checkout-btn--pay"
+            @click="sendbusket()"
+          >
             <p>ОФОРМИТЬ</p>
             <div style="font-weight: 600">{{ total_bonus }} р.</div>
           </button>
+          <!-- background: #77a648;
+    color: #fff; -->
+          <button
+            type="button"
+            class="order-busket__checkout-btn--receipt"
+            :style="{
+              color: isReceipt ? '#fff' : null,
+              background: isReceipt ? '#77a648' : null,
+            }"
+            @click="isReceipt = !isReceipt"
+          >
+            <p>Распечатать</p>
+            <i class="bx bx-printer"></i>
+          </button>
         </div>
       </div>
+      <Modal title="Комментарий" v-if="modal_desc" @close="modal_desc = false">
+        <textarea
+          type="textarea"
+          rows="4"
+          cols="50"
+          v-model="description"
+        ></textarea>
+        <button
+          type="button"
+          @click="modal_desc = false"
+          style="width: 100%; background-color: #77a648; color: #fff"
+        >
+          <p>готово</p>
+        </button>
+      </Modal>
     </div>
     <Footer style="margin-top: auto">Kamol</Footer>
   </div>
@@ -153,7 +195,10 @@ export default {
       search: null,
 
       tables: [],
+      datetime: null,
       table: "",
+      description: "",
+      modal_desc: false,
       employees: [],
       employee: "",
       bonuses: [],
@@ -161,6 +206,10 @@ export default {
       client_quantity: 1,
       type_payment: "",
       type_payment_list: [
+        {
+          value: 2,
+          label: "Списание",
+        },
         {
           value: 1,
           label: "Наличка",
@@ -174,9 +223,12 @@ export default {
       total_sum: 0,
       total_bonus: 0,
 
-      buscket: [],
+      busket: [],
 
       store: [],
+
+      orderId: null,
+      isReceipt: false,
     };
   },
   fetchOnSever: false,
@@ -187,6 +239,13 @@ export default {
   watch: {
     client_quantity(val) {
       val < 1 ? (this.client_quantity = 1) : null;
+    },
+  },
+
+  computed: {
+    storeData() {
+      Object.assign({}, this.$store.state.busketData.busket);
+      return JSON.parse(JSON.stringify(this.$store.state.busketData.busket));
     },
   },
 
@@ -203,6 +262,27 @@ export default {
               });
             });
           });
+          if (this.storeData) {
+            this.busket = this.storeData.busket;
+            this.table = this.storeData.table.value
+              ? this.storeData.table.value
+              : "";
+            this.employee = this.storeData.employee.value
+              ? this.storeData.employee.value
+              : "";
+            this.bonus = this.storeData.bonus.value
+              ? this.storeData.bonus.value
+              : "";
+            this.type_payment = this.storeData.type_payment
+              ? this.storeData.type_payment
+              : "";
+            this.client_quantity = this.storeData.client_quantity;
+            this.datetime = this.storeData.datetime.value;
+            this.description = this.storeData.description;
+            this.total_bonus = this.storeData.total;
+            this.total_sum = this.storeData.subtotal;
+            this.orderId = this.storeData.id;
+          }
           this.store = res.store;
           this.tables = res.inputs.tables;
           this.employees = res.inputs.employees;
@@ -225,10 +305,10 @@ export default {
         this.products = [];
       }
     },
-    addToBuscket(product) {
-      if (this.buscket.length > 0) {
+    addToBusket(product) {
+      if (this.busket.length > 0) {
         let isProductFind = false;
-        this.buscket.forEach((item) => {
+        this.busket.forEach((item) => {
           if (product.id === item.id) {
             isProductFind = true;
             if (item.is_quantity) {
@@ -245,12 +325,12 @@ export default {
           }
         });
         if (!isProductFind) {
-          this.buscket.push({ count: 1, ...product });
+          this.busket.push({ count: 1, ...product });
           this.total_sum += product.price;
           this.eventBonus();
         }
       } else {
-        this.buscket.push({ count: 1, ...product });
+        this.busket.push({ count: 1, ...product });
         this.total_sum = product.price;
         this.total_bonus = this.total_sum;
         this.eventBonus();
@@ -258,11 +338,11 @@ export default {
     },
     productCountMinus(item) {
       if (item.count === 1) {
-        this.buscket = this.buscket.filter((product) => {
+        this.busket = this.busket.filter((product) => {
           return product.id === item.id ? false : true;
         });
       } else {
-        this.buscket.forEach((product) => {
+        this.busket.forEach((product) => {
           if (product.id === item.id) product.count -= 1;
         });
       }
@@ -270,7 +350,7 @@ export default {
       this.eventBonus();
     },
     productCountPlus(item) {
-      this.buscket.forEach((product) => {
+      this.busket.forEach((product) => {
         if (product.id === item.id) {
           if (item.is_quantity) {
             if (item.quantity !== product.count) {
@@ -286,7 +366,7 @@ export default {
       this.eventBonus();
     },
     productDelete(id) {
-      this.buscket = this.buscket.filter((product) => {
+      this.busket = this.busket.filter((product) => {
         if (product.id === id) {
           this.total_sum -= product.price * product.count;
           return false;
@@ -312,21 +392,24 @@ export default {
         }
       });
     },
-    sendBuscket() {
-      if (this.buscket.length > 0) {
+    sendbusket() {
+      if (this.busket.length > 0) {
         let busketData = {
-          busket: this.buscket,
+          busket: this.busket,
+          datetime: this.datetime,
           table: this.table,
           bonus: this.bonus,
           employee: this.employee,
           total: this.total_bonus,
           client_quantity: this.client_quantity,
           type_payment: this.type_payment,
+          description: this.description,
+          id: this.orderId,
         };
         this.$axios
           .$post("order", busketData)
           .then((res) => {
-            this.buscket = [];
+            this.busket = [];
             this.table = "";
             this.bonus = "";
             this.employee = "";
@@ -334,9 +417,13 @@ export default {
             this.total_sum = 0;
             this.type_payment = "";
             this.client_quantity = 1;
+            this.description = "";
+            this.datetime = null;
             this.getData();
-            this.$store.commit("busketData/changeBusketData", res);
-            this.$router.push("/print");
+            if (this.isReceipt) {
+              this.$store.commit("busketData/changeBusketData", res);
+              this.$router.push("/print");
+            }
           })
           .catch((err) => {
             console.log(err);
@@ -380,7 +467,9 @@ export default {
   &-menu__form {
     display: flex;
     input,
-    select {
+    select,
+    button {
+      text-align: left;
       flex: 1;
       width: 50%;
       background: #e6e6e6;
@@ -464,14 +553,14 @@ export default {
     }
   }
 
-  &-buscket {
+  &-busket {
     flex: 1;
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
   }
-  &-buscket__bag {
+  &-busket__bag {
     width: 100%;
     height: 65%;
     margin-bottom: 20px;
@@ -484,7 +573,7 @@ export default {
       height: 60%;
     }
   }
-  &-buscket__article {
+  &-busket__article {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
@@ -492,7 +581,7 @@ export default {
     background: #f2f2f2;
     white-space: normal;
   }
-  &-buscket__article-count {
+  &-busket__article-count {
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
@@ -526,7 +615,7 @@ export default {
     }
   }
 
-  &-buscket__checkout {
+  &-busket__checkout {
     background: #e6e6e6;
     border-radius: 10px;
     width: 100%;
@@ -545,18 +634,8 @@ export default {
         margin-bottom: 10px;
       }
     }
-    button {
-      display: flex;
-      justify-content: space-between;
-      background: #77a648;
-      color: #fff;
-      padding: 14px;
-      border-radius: 10px;
-      margin-top: 10px;
-      cursor: pointer;
-    }
   }
-  &-buscket__checkout-count-wrapper {
+  &-busket__checkout-count-wrapper {
     margin-bottom: 10px;
 
     p {
@@ -567,7 +646,7 @@ export default {
     }
   }
 
-  &-buscket__checkout-count {
+  &-busket__checkout-count {
     display: flex;
     justify-content: space-between;
     i {
@@ -598,6 +677,25 @@ export default {
       background: #d7d7d7;
       text-align: center;
     }
+  }
+
+  &-busket__checkout-btn--pay {
+    display: flex;
+    justify-content: space-between;
+    background: #77a648;
+    color: #fff;
+    padding: 14px;
+    border-radius: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+  &-busket__checkout-btn--receipt {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px;
+    border-radius: 10px;
+    margin-top: 10px;
+    cursor: pointer;
   }
 }
 </style>

@@ -106,6 +106,7 @@ export default {
   fetch() {
     this.store = this.$store.state.busketData.busket;
     if (!this.store) {
+      this.$store.commit("busketData/changeBusketData", null);
       this.$router.push("/");
     } else {
       this.store.busket.forEach((product) => {
@@ -118,6 +119,7 @@ export default {
     setTimeout(function () {
       window.print();
       setTimeout(function () {
+        vm.$store.commit("busketData/changeBusketData", null);
         vm.$router.push("/");
         window.close();
       }, 200);

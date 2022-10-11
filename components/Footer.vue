@@ -6,7 +6,7 @@
       exact-active-class="footer-item--active"
     >
       <span>
-        <i class="bx bx-notepad"></i>
+        <i class="bx bx-download"></i>
       </span>
     </NuxtLink>
     <NuxtLink
@@ -25,6 +25,15 @@
     >
       <span>
         <i class="bx bx-line-chart"></i>
+      </span>
+    </NuxtLink>
+    <NuxtLink
+      to="/calendar"
+      class="footer-item"
+      exact-active-class="footer-item--active"
+    >
+      <span>
+        <i class="bx bx-calendar"></i>
       </span>
     </NuxtLink>
     <NuxtLink

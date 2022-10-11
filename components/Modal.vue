@@ -13,7 +13,6 @@
           {{ title }}
         </div>
         <div class="modal-close" @click="$emit('close')">
-          <!-- <i class="bx bx-x"></i> -->
           <svg
             width="30px"
             height="30px"
@@ -100,10 +99,13 @@ export default {
 
   @include less-than(tablet) {
     max-width: 350px;
+    max-height: 500px;
   }
 
   input,
-  select {
+  select,
+  textarea {
+    display: block;
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
