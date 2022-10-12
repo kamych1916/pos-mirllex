@@ -139,25 +139,23 @@
 
           <button
             type="button"
-            class="order-busket__checkout-btn--pay"
-            @click="sendbusket()"
-          >
-            <p>ОФОРМИТЬ</p>
-            <div style="font-weight: 600">{{ total_bonus }} р.</div>
-          </button>
-          <!-- background: #77a648;
-    color: #fff; -->
-          <button
-            type="button"
-            class="order-busket__checkout-btn--receipt"
+            class="order-busket__checkout-btn"
             :style="{
-              color: isReceipt ? '#fff' : null,
-              background: isReceipt ? '#77a648' : null,
+              color: isReceipt ? '#fff' : '#000',
+              background: isReceipt ? '#77a648' : '#f2f2f2',
             }"
             @click="isReceipt = !isReceipt"
           >
             <p>Распечатать</p>
             <i class="bx bx-printer"></i>
+          </button>
+          <button
+            type="button"
+            class="order-busket__checkout-btn"
+            @click="sendbusket()"
+          >
+            <p>ОФОРМИТЬ</p>
+            <div style="font-weight: 600">{{ total_bonus }} р.</div>
           </button>
         </div>
       </div>
@@ -459,6 +457,12 @@ export default {
     flex-flow: nowrap column;
     align-items: stretch;
     position: relative;
+    @include less-than(laptop) {
+      flex: 3.7;
+    }
+    @include less-than(laptop) {
+      flex: 3;
+    }
     @include less-than(tablet) {
       flex: 5;
       min-width: 100%;
@@ -476,7 +480,8 @@ export default {
       padding: 14px;
       border-radius: 10px;
       @include less-than(tablet) {
-        width: 50%;
+        // width: 50%;
+        // min-width: 100%;
       }
     }
   }
@@ -679,23 +684,15 @@ export default {
     }
   }
 
-  &-busket__checkout-btn--pay {
+  &-busket__checkout-btn {
     display: flex;
     justify-content: space-between;
+    padding: 14px;
+    border-radius: 10px;
+    margin-top: 10px;
+    cursor: pointer;
     background: #77a648;
     color: #fff;
-    padding: 14px;
-    border-radius: 10px;
-    margin-top: 10px;
-    cursor: pointer;
-  }
-  &-busket__checkout-btn--receipt {
-    display: flex;
-    justify-content: space-between;
-    padding: 14px;
-    border-radius: 10px;
-    margin-top: 10px;
-    cursor: pointer;
   }
 }
 </style>

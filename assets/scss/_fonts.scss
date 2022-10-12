@@ -3,3 +3,20 @@
 //     src: local("Blender Pro Bold"), local("Blender-Pro-Bold"), url("../fonts/BlenderPro-Bold.woff2") format("woff2"),
 //         url("../fonts/BlenderPro-Bold.woff") format("woff"), url("../fonts/BlenderPro-Bold.ttf") format("truetype");
 // }
+@font-face {
+  font-family: "Nunito-Medium";
+  src: url("../fonts/Nunito-Medium.woff2") format("woff2");
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Nunito-SemiBold";
+  src: url("../fonts/Nunito-SemiBold.woff2") format("woff2");
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Nunito-Bold";
+  src: url("../fonts/Nunito-Bold.woff2") format("woff2");
+  font-style: normal;
+}
