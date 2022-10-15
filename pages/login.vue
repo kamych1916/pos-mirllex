@@ -15,7 +15,7 @@
           />
           <i
             @click="showPassword = !showPassword"
-            :class="showPassword ? 'bx-show' : 'bx-low-vision'"
+            :class="showPassword ? 'bx-low-vision' : 'bx-show'"
             class="bx auth-password__icon"
           >
           </i>
@@ -33,7 +33,7 @@ export default {
   data() {
     return {
       error: false,
-      showPassword: false,
+      showPassword: true,
       user: {
         login: "",
         password: "",

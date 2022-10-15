@@ -3,20 +3,32 @@
     <div class="order-container">
       <div class="order-menu">
         <div class="order-menu__form">
-          <input
-            @input="searchEvent()"
-            type="text"
-            placeholder="поиск товара"
-            v-model="search"
-            style="margin-right: 20px"
-          />
-          <input
-            type="datetime-local"
-            placeholder="Выберите время"
-            style="margin-right: 20px"
-            v-model="datetime"
-          />
-          <select v-model="table" style="margin-right: 20px">
+          <div class="order-menu__form-search">
+            <img src="/icons/search.svg" />
+            <input
+              @input="searchEvent()"
+              type="text"
+              placeholder="Поиск товара"
+              v-model="search"
+            />
+          </div>
+          <div class="order-menu__form-datetime">
+            <input
+              id="datetime"
+              autofocus
+              type="datetime-local"
+              v-model="datetime"
+            />
+            <button>
+              <img src="/icons/calendar.svg" />
+              <p style="padding-top: 2px">
+                {{
+                  datetime ? datetime.replace("T", ", ") : "Выбор даты заказа"
+                }}
+              </p>
+            </button>
+          </div>
+          <select v-model="table" class="order-menu__form-table">
             <option disabled value="">Выбор стола</option>
             <option
               v-for="item in tables"
@@ -26,8 +38,12 @@
               {{ item.label }}
             </option>
           </select>
-          <button type="button" @click="modal_desc = true">
-            Комментарий к заказу ..
+          <button
+            type="button"
+            @click="modal_desc = true"
+            style="margin-right: 20px"
+          >
+            Комментарий к заказу
           </button>
         </div>
         <div class="order-menu__categories">
@@ -59,11 +75,11 @@
             </div>
             <div style="display: flex; justify-content: space-between">
               <span>
-                <p v-if="product.is_quantity">кол.: {{ product.quantity }}</p>
+                <p class="order-menu__product-count" v-if="product.is_quantity">
+                  {{ product.quantity }}
+                </p>
               </span>
-              <span style="color: #77a648; font-weight: 600"
-                >{{ product.price }} р.</span
-              >
+              <span> {{ product.price }} р. </span>
             </div>
           </div>
         </div>
@@ -469,14 +485,18 @@ export default {
     }
   }
   &-menu__form {
+    white-space: nowrap;
     display: flex;
+    overflow: auto;
+    overflow-y: hidden;
+    padding-bottom: 10px;
     input,
     select,
     button {
+      color: #000;
+      cursor: pointer;
       text-align: left;
-      flex: 1;
-      width: 50%;
-      background: #e6e6e6;
+      background: #fff;
       padding: 14px;
       border-radius: 10px;
       @include less-than(tablet) {
@@ -485,35 +505,95 @@ export default {
       }
     }
   }
+  &-menu__form-datetime {
+    position: relative;
+    margin-right: 20px;
+    transition: all ease 0.3s;
+    &:active {
+      transform: scale(0.9);
+    }
+    button {
+      width: 202px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      img {
+        transform: scale(0.9);
+        padding-right: 8px;
+      }
+    }
+    input {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    input::-webkit-calendar-picker-indicator {
+      position: absolute;
+      top: -150%;
+      left: -150%;
+      width: 300%;
+      height: 300%;
+      cursor: pointer;
+    }
+  }
+  &-menu__form-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 10px;
+    margin-right: 20px;
+    input {
+      margin-left: 26px;
+    }
+    img {
+      transform: scale(0.8);
+      padding: 0 14px;
+      position: absolute;
+      left: 0;
+    }
+  }
+
+  &-menu__form-table {
+    margin-right: 20px;
+  }
+
   &-menu__categories {
     display: flex;
     overflow: auto;
     white-space: nowrap;
-    margin-top: 20px;
+    margin-top: 10px;
   }
   &-menu__category {
     display: inline-block;
-    background: #e6e6e6;
+    // background: #fff;
+    color: #49bf00;
+    background: #e0f5ca;
     margin-right: 20px;
     margin-bottom: 10px;
     padding: 30px 25px;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 10px;
+    border-radius: 12px;
     transition: all ease 0.2s;
     cursor: pointer;
     &:active {
       transform: scale(0.9);
     }
-    @include less-than(tablet) {
-      &:active {
-        transform: scale(0.7);
-      }
-    }
+    // @include less-than(tablet) {
+    //   &:active {
+    //     transform: scale(0.8);
+    //   }
+    // }
   }
   &-menu__category--active {
-    background: #77a648;
+    // background: #77a648;
+    background: #5fbd00;
     color: #fff;
   }
   &-menu__products {
@@ -541,11 +621,13 @@ export default {
     padding: 14px;
     height: 100%;
     min-height: 140px;
-    background: #e6e6e6;
+    background: #fff;
+    border-top: 2px solid #5fbd00;
+    border-radius: 12px;
     max-height: 100px;
     border-radius: 10px;
     white-space: normal;
-    transition: transform ease 0.2s;
+    transition: transform ease 0.4s;
     cursor: pointer;
     &:active {
       transform: scale(0.9);
@@ -553,9 +635,22 @@ export default {
     @include less-than(tablet) {
       flex: 1;
       &:active {
-        transform: scale(0.7);
+        transform: scale(0.8);
       }
     }
+  }
+
+  &-menu__product-count {
+    width: 32px;
+    height: 32px;
+    // background: #f9e9c9;
+    background: rgba(95, 189, 0, 0.15);
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    // color: #ee9d00;
+    color: #5fbd00;
   }
 
   &-busket {
