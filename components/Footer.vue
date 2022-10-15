@@ -55,28 +55,42 @@ export default {};
 <style lang="scss">
 .footer {
   display: flex;
+  position: fixed;
+  bottom: 0;
+  background-color: #fff;
+  border-radius: 12px;
+  margin: 20px;
+  @include less-than(tablet) {
+    border-radius: 0px;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.5);
+    margin: 0px;
+  }
+
   &-item {
     width: 55px;
     height: 55px;
-    background: #e6e6e6;
     border-radius: 10px;
     margin-right: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
+    @include less-than(tablet) {
+      flex: 1;
+    }
     span {
       display: flex;
       justify-content: center;
       align-items: center;
       width: 30px;
       height: 30px;
-      background: #f2f2f2;
-      border-radius: 20px;
+      // background: #f2f2f2;
+      border-radius: 6px;
     }
   }
   &-item--active {
     span {
-      background: #77a648;
+      background: #5fbd00;
       color: #fff;
     }
   }

@@ -70,7 +70,7 @@
             @click="addToBusket(product)"
             class="order-menu__product"
           >
-            <div>
+            <div style="height: 84px; overflow: hidden">
               {{ product.name }}
             </div>
             <div style="display: flex; justify-content: space-between">
@@ -95,31 +95,45 @@
               style="
                 display: flex;
                 justify-content: space-between;
-                margin-bottom: 10px;
+                align-items: center;
               "
             >
-              <span style="color: #77a648; font-weight: 600">
-                {{ item.price }} р.
-              </span>
+              <span style="width: 85%">{{ item.name }}</span>
               <i @click="productDelete(item.id)" class="bx bx-trash"></i>
             </div>
-            <span>{{ item.name }}</span>
-            <div class="order-busket__article-count">
-              <i @click="productCountMinus(item)" class="bx bx-minus"></i>
-              <span>{{ item.count }}</span>
-              <i @click="productCountPlus(item)" class="bx bx-plus"></i>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 40px;
+              "
+            >
+              <div class="order-busket__article-count">
+                <i @click="productCountMinus(item)" class="bx bx-minus"></i>
+                <span>{{ item.count }}</span>
+                <i @click="productCountPlus(item)" class="bx bx-plus"></i>
+              </div>
+              <span> {{ item.price }} р. </span>
             </div>
           </div>
+          <div class="order-busket__bag-backdrop"></div>
         </div>
         <div class="order-busket__checkout">
-          <div class="order-busket__checkout-count-wrapper">
+          <select v-model="client_quantity">
+            <option disabled value="">Количество гостей</option>
+            <option v-for="item in 10" :key="item" :value="item">
+              {{ item }}
+            </option>
+          </select>
+          <!-- <div class="order-busket__checkout-count-wrapper">
             <p>Количество гостей</p>
             <div class="order-busket__checkout-count">
               <i @click="client_quantity -= 1" class="bx bx-minus"></i>
               <span>{{ client_quantity }}</span>
               <i @click="client_quantity += 1" class="bx bx-plus"></i>
             </div>
-          </div>
+          </div> -->
           <select v-model="employee">
             <option disabled value="">Сотрудник</option>
             <option
@@ -153,26 +167,29 @@
             </option>
           </select>
 
-          <button
-            type="button"
-            class="order-busket__checkout-btn"
-            :style="{
-              color: isReceipt ? '#fff' : '#000',
-              background: isReceipt ? '#77a648' : '#f2f2f2',
-            }"
-            @click="isReceipt = !isReceipt"
-          >
-            <p>Распечатать</p>
-            <i class="bx bx-printer"></i>
-          </button>
-          <button
-            type="button"
-            class="order-busket__checkout-btn"
-            @click="sendbusket()"
-          >
-            <p>ОФОРМИТЬ</p>
-            <div style="font-weight: 600">{{ total_bonus }} р.</div>
-          </button>
+          <div style="display: flex; justify-content: space-between">
+            <button
+              type="button"
+              class="order-busket__checkout-btn"
+              style="width: 100%; margin-right: 30px"
+              @click="sendbusket()"
+            >
+              <p>оформить</p>
+              <!-- <i class="bx bx-check"></i> -->
+              <div style="font-family: `Nunito-Bold`">{{ total_bonus }} р.</div>
+            </button>
+            <button
+              style="background: #fff; color: #5fbd00"
+              type="button"
+              :class="[
+                'order-busket__checkout-btn',
+                isReceipt ? 'order-busket__checkout-btn--active' : null,
+              ]"
+              @click="isReceipt = !isReceipt"
+            >
+              <i class="bx bx-printer"></i>
+            </button>
+          </div>
         </div>
       </div>
       <Modal title="Комментарий" v-if="modal_desc" @close="modal_desc = false">
@@ -185,7 +202,7 @@
         <button
           type="button"
           @click="modal_desc = false"
-          style="width: 100%; background-color: #77a648; color: #fff"
+          style="width: 100%; background-color: #5fbd00; color: #fff"
         >
           <p>готово</p>
         </button>
@@ -217,7 +234,7 @@ export default {
       employee: "",
       bonuses: [],
       bonus: "",
-      client_quantity: 1,
+      client_quantity: "",
       type_payment: "",
       type_payment_list: [
         {
@@ -248,12 +265,6 @@ export default {
   fetchOnSever: false,
   fetch() {
     this.getData();
-  },
-
-  watch: {
-    client_quantity(val) {
-      val < 1 ? (this.client_quantity = 1) : null;
-    },
   },
 
   computed: {
@@ -415,7 +426,7 @@ export default {
           bonus: this.bonus,
           employee: this.employee,
           total: this.total_bonus,
-          client_quantity: this.client_quantity,
+          client_quantity: this.client_quantity ? this.client_quantity : 1,
           type_payment: this.type_payment,
           description: this.description,
           id: this.orderId,
@@ -430,7 +441,7 @@ export default {
             this.total_bonus = 0;
             this.total_sum = 0;
             this.type_payment = "";
-            this.client_quantity = 1;
+            this.client_quantity = "";
             this.description = "";
             this.datetime = null;
             this.getData();
@@ -454,30 +465,32 @@ export default {
 .order {
   &-container {
     display: flex;
-    height: 90%;
+    height: 100%;
     @include less-than(tablet) {
-      // flex-direction: column;
+      height: calc(100% - 55px);
+      // padding-bottom: calc(135px + env(safe-area-inset-bottom));
       overflow: auto;
       white-space: nowrap;
-      padding-bottom: 10px;
     }
   }
   &-menu {
+    padding: 20px;
     flex: 4;
     width: 100%;
-    margin-right: 20px;
-    min-height: 100%;
+    // margin-right: 20px;
+    // min-height: 100%;
     height: 100%;
     max-height: 100%;
     display: flex;
     flex-flow: nowrap column;
     align-items: stretch;
     position: relative;
+    // @include less-than(laptop_l) {
+    //   flex: 3;
+    // }
     @include less-than(laptop) {
-      flex: 3.7;
-    }
-    @include less-than(laptop) {
-      flex: 3;
+      flex: 2;
+      width: 72%;
     }
     @include less-than(tablet) {
       flex: 5;
@@ -557,11 +570,9 @@ export default {
       left: 0;
     }
   }
-
   &-menu__form-table {
     margin-right: 20px;
   }
-
   &-menu__categories {
     display: flex;
     overflow: auto;
@@ -608,8 +619,9 @@ export default {
     max-height: 100%;
     // margin-top: auto;
     padding-top: 10px;
-    padding-right: 10px;
+    padding-right: 20px;
     @include less-than(tablet) {
+      padding-right: 0px;
       display: flex;
       flex-direction: column;
     }
@@ -629,6 +641,7 @@ export default {
     white-space: normal;
     transition: transform ease 0.4s;
     cursor: pointer;
+    text-overflow: ellipsis;
     &:active {
       transform: scale(0.9);
     }
@@ -657,42 +670,64 @@ export default {
     flex: 1;
     width: 100%;
     height: 100%;
+    background: #fff;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
   }
   &-busket__bag {
     width: 100%;
-    height: 65%;
-    margin-bottom: 20px;
-    background: #e6e6e6;
+    // height: 65%;
     border-radius: 10px;
     padding: 10px;
-    overflow: auto;
+    padding-bottom: 0;
+    overflow: scroll;
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+
     @include less-than(tablet) {
       width: 280px;
-      height: 60%;
+      // height: 70%;
     }
+  }
+  &-busket__bag-backdrop {
+    margin: 0;
+    padding: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: sticky;
+    width: 100%;
+    height: 65px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0) 0%,
+      #ffffff 100%
+    );
   }
   &-busket__article {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
-    margin-bottom: 10px;
-    background: #f2f2f2;
+    margin-bottom: 20px;
+    background: #fff;
+    border-top: 2px solid #5fbd00;
+    border-radius: 12px;
+    box-shadow: 0px 0px 40px rgba(4, 114, 8, 0.08);
     white-space: normal;
   }
   &-busket__article-count {
     display: flex;
     justify-content: space-between;
-    margin-top: 20px;
     i {
       display: flex;
       align-items: center;
-      padding: 8px 20px;
-      background: #e6e6e6;
+      padding: 8px 10px;
+      background: #5fbd00;
+      color: #fff;
       transition: transform ease 0.2s;
       cursor: pointer;
-
       &:active {
         transform: scale(0.7);
       }
@@ -706,17 +741,17 @@ export default {
       }
     }
     span {
-      width: 100%;
+      width: 55px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #d7d7d7;
+      background: #f5f5f5;
       text-align: center;
     }
   }
 
   &-busket__checkout {
-    background: #e6e6e6;
+    // background: #e6e6e6;
     border-radius: 10px;
     width: 100%;
     display: flex;
@@ -725,11 +760,15 @@ export default {
     padding: 10px;
     select,
     input {
-      background: #f2f2f2;
-      padding: 14px;
+      // background: #f2f2f2;
+      cursor: pointer;
+      border-bottom: 1px solid #f5f5f5;
+      padding: 8px 0;
       border-radius: 10px;
       width: 100%;
       margin-bottom: 10px;
+      background: #fff;
+      color: #000;
       @include less-than(tablet) {
         margin-bottom: 10px;
       }
@@ -781,13 +820,20 @@ export default {
 
   &-busket__checkout-btn {
     display: flex;
-    justify-content: space-between;
-    padding: 14px;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 4px 12px;
     border-radius: 10px;
     margin-top: 10px;
     cursor: pointer;
-    background: #77a648;
+    background: #5fbd00;
+    border: 2px solid #5fbd00;
     color: #fff;
+  }
+  &-busket__checkout-btn--active {
+    background: #5fbd00 !important;
+    color: #fff !important;
   }
 }
 </style>
