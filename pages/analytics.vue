@@ -1,229 +1,230 @@
 <template>
-  <div class="analytics" v-if="main_data && popular_products">
-    <div class="analytics-today">
-      <div
-        class="analytics-today__item"
-        style="font-size: 17px; font-weight: 500"
-      >
-        <div>Cегодня,</div>
-        {{ new Date().toLocaleDateString() }}
-      </div>
-      <div class="analytics-today__item">
-        <div class="analytics-today__item-title">{{ main_data.revenue }}</div>
-        <span>выручка</span>
-      </div>
-      <div class="analytics-today__item">
-        <div class="analytics-today__item-title">
-          {{ main_data.checks }}
-        </div>
-        <span>кол. чеков</span>
-      </div>
-      <div class="analytics-today__item">
-        <div class="analytics-today__item-title">
-          {{ main_data.visitors }}
-        </div>
-        <span>кол. посетителей</span>
-      </div>
-      <div class="analytics-today__item">
-        <div class="analytics-today__item-title">
-          {{ main_data.average_check }}
-        </div>
-        <span>средний чек</span>
-      </div>
-    </div>
-
-    <div class="analytics-chart">
-      <div class="analytics-chart__header">
-        <p>Выручка за -</p>
-
-        <!-- :locale-data="{ firstDay: 1, format: 'dd-mm-yyyy' }" -->
-        <date-range-picker
-          ref="picker"
-          :locale-data="{
-            format: 'mm-dd-yyyy',
-            separator: ' - ',
-            weekLabel: 'Камбулат',
-            customRangeLabel: 'Custom Range',
-            daysOfWeek: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
-            monthNames: [
-              'Январь',
-              'Февраль',
-              'Март',
-              'Апрель',
-              'Май',
-              'Июнь',
-              'Июль',
-              'Август',
-              'Сентябрь',
-              'Октябрь',
-              'Ноябрь',
-              'Декабрь',
-            ],
-          }"
-          :ranges="ranges"
-          v-model="dateRange"
-          :opens="'center'"
-          :autoApply="true"
-          :singleDatePicker="'range'"
-          :appendToBody="true"
-          :lang="'zh'"
-          class="analytics-chart__wrapper"
-        >
-          <template v-slot:input="picker" style="min-width: 350px">
-            {{ picker.startDate | date }} - {{ picker.endDate | date }}
-          </template>
-        </date-range-picker>
-      </div>
-      <vueApexCharts
-        ref="chart_stat"
-        :width="chartWidth"
-        :height="chartHeight"
-        :options="chartOptions"
-        :series="series"
-      ></vueApexCharts>
-      <div v-if="chartData" class="analytics-range__item-wrapper">
+  <div>
+    <div class="analytics" v-if="main_data && popular_products">
+      <div class="analytics-today">
         <div
-          @click="
-            chartValue = item.id;
-            changeChart(item.id);
-          "
-          v-for="item in chartData.value"
-          :class="[
-            'analytics-range__item',
-            item.id === chartId ? 'analytics-range__item--active' : null,
-          ]"
+          class="analytics-today__item"
+          style="font-size: 17px; font-weight: 500"
         >
-          <div class="analytics-range__item-title">
-            {{ item.value }}
+          <div>Cегодня,</div>
+          {{ new Date().toLocaleDateString() }}
+        </div>
+        <div class="analytics-today__item">
+          <div class="analytics-today__item-title">{{ main_data.revenue }}</div>
+          <span>выручка</span>
+        </div>
+        <div class="analytics-today__item">
+          <div class="analytics-today__item-title">
+            {{ main_data.checks }}
           </div>
-          <span>{{ item.label }}</span>
+          <span>кол. чеков</span>
         </div>
-      </div>
-    </div>
-    <div class="analytics-info__wrapper">
-      <div class="analytics-info__title-wrapper">
-        <div
-          :class="[
-            'analytics-info__title',
-            isPopularProducts ? 'analytics-info__title--active' : null,
-          ]"
-          @click="
-            isPopularProducts = !isPopularProducts;
-            isChecks = false;
-            currentPage = 1;
-          "
-        >
-          Популярные товары
-        </div>
-        <div
-          :class="[
-            'analytics-info__title',
-            isChecks ? 'analytics-info__title--active' : null,
-          ]"
-          @click="
-            isChecks = !isChecks;
-            isPopularProducts = false;
-            currentPage = 1;
-          "
-        >
-          Таблица чеков
-        </div>
-      </div>
-      <div class="analytics-info" v-if="isPopularProducts">
-        <table class="analytics-info__table">
-          <thead align="left">
-            <tr>
-              <th>Наименование</th>
-              <th>Количество</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="(product, index) in paginated_data(popular_products)"
-              :key="index"
-            >
-              <td>{{ product.name }}</td>
-              <td>{{ product.count }}</td>
-            </tr>
-          </tbody>
-        </table>
-        <pagination
-          :totalPages="pageSizePopular"
-          :currentPage="currentPage"
-          @pagechanged="onPageChange"
-        />
-      </div>
-      <div class="analytics-info" v-if="isChecks">
-        <table class="analytics-info__table">
-          <thead align="left">
-            <tr>
-              <th>Дата</th>
-              <th>Сотрудник</th>
-              <th>Стол</th>
-              <th>Бонус</th>
-              <th>Сумма</th>
-              <th>Корзина</th>
-              <th>Печать</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(check, index) in paginated_data(checks)" :key="index">
-              <td>{{ check.date }}</td>
-              <td>{{ check.employee }}</td>
-              <td>{{ check.table }}</td>
-              <td>{{ check.bonus }}</td>
-              <td style="width: 0; text-align: center">{{ check.total }}</td>
-              <td style="width: 0; text-align: center">
-                <button
-                  class="analytics-info__table-btn"
-                  @click="openCheckBusketModal(check.busket)"
-                >
-                  <i class="bx bx-cart"></i>
-                </button>
-              </td>
-              <td style="width: 0; text-align: center">
-                <button @click="print()" class="analytics-info__table-btn">
-                  <i class="bx bx-printer"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <pagination
-          :totalPages="pageSizeChecks"
-          :currentPage="currentPage"
-          @pagechanged="onPageChange"
-        />
-        <Modal
-          title="Просмотр продуктов чека"
-          v-if="checkBusketModal"
-          @close="
-            checkBusketModal = false;
-            checkBusket = null;
-          "
-        >
-          <div class="analytics-info">
-            <table class="analytics-info__table">
-              <thead align="left">
-                <tr>
-                  <th>Наименование</th>
-                  <th>Цена</th>
-                  <th>Количество</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(product, index) in checkBusket" :key="index">
-                  <td>{{ product.name }}</td>
-                  <td>{{ product.price }}</td>
-                  <td>{{ product.quantity }}</td>
-                </tr>
-              </tbody>
-            </table>
+        <div class="analytics-today__item">
+          <div class="analytics-today__item-title">
+            {{ main_data.visitors }}
           </div>
-        </Modal>
+          <span>кол. посетителей</span>
+        </div>
+        <div class="analytics-today__item">
+          <div class="analytics-today__item-title">
+            {{ main_data.average_check }}
+          </div>
+          <span>средний чек</span>
+        </div>
+      </div>
+
+      <div class="analytics-chart">
+        <div class="analytics-chart__header">
+          <p>Выручка за -</p>
+
+          <!-- :locale-data="{ firstDay: 1, format: 'dd-mm-yyyy' }" -->
+          <date-range-picker
+            ref="picker"
+            :locale-data="{
+              format: 'mm-dd-yyyy',
+              separator: ' - ',
+              weekLabel: 'Камбулат',
+              customRangeLabel: 'Custom Range',
+              daysOfWeek: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+              monthNames: [
+                'Январь',
+                'Февраль',
+                'Март',
+                'Апрель',
+                'Май',
+                'Июнь',
+                'Июль',
+                'Август',
+                'Сентябрь',
+                'Октябрь',
+                'Ноябрь',
+                'Декабрь',
+              ],
+            }"
+            :ranges="ranges"
+            v-model="dateRange"
+            :opens="'center'"
+            :autoApply="true"
+            :singleDatePicker="'range'"
+            :appendToBody="true"
+            :lang="'zh'"
+            class="analytics-chart__wrapper"
+          >
+            <template v-slot:input="picker" style="min-width: 350px">
+              {{ picker.startDate | date }} - {{ picker.endDate | date }}
+            </template>
+          </date-range-picker>
+        </div>
+        <vueApexCharts
+          ref="chart_stat"
+          :width="chartWidth"
+          :height="chartHeight"
+          :options="chartOptions"
+          :series="series"
+        ></vueApexCharts>
+        <div v-if="chartData" class="analytics-range__item-wrapper">
+          <div
+            @click="
+              chartValue = item.id;
+              changeChart(item.id);
+            "
+            v-for="item in chartData.value"
+            :class="[
+              'analytics-range__item',
+              item.id === chartId ? 'analytics-range__item--active' : null,
+            ]"
+          >
+            <div class="analytics-range__item-title">
+              {{ item.value }}
+            </div>
+            <span>{{ item.label }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="analytics-info__wrapper">
+        <div class="analytics-info__title-wrapper">
+          <div
+            :class="[
+              'analytics-info__title',
+              isPopularProducts ? 'analytics-info__title--active' : null,
+            ]"
+            @click="
+              isPopularProducts = !isPopularProducts;
+              isChecks = false;
+              currentPage = 1;
+            "
+          >
+            Популярные товары
+          </div>
+          <div
+            :class="[
+              'analytics-info__title',
+              isChecks ? 'analytics-info__title--active' : null,
+            ]"
+            @click="
+              isChecks = !isChecks;
+              isPopularProducts = false;
+              currentPage = 1;
+            "
+          >
+            Таблица чеков
+          </div>
+        </div>
+        <div class="analytics-info" v-if="isPopularProducts">
+          <table class="analytics-info__table">
+            <thead align="left">
+              <tr>
+                <th>Наименование</th>
+                <th>Количество</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(product, index) in paginated_data(popular_products)"
+                :key="index"
+              >
+                <td>{{ product.name }}</td>
+                <td>{{ product.count }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <pagination
+            :totalPages="pageSizePopular"
+            :currentPage="currentPage"
+            @pagechanged="onPageChange"
+          />
+        </div>
+        <div class="analytics-info" v-if="isChecks">
+          <table class="analytics-info__table">
+            <thead align="left">
+              <tr>
+                <th>Дата</th>
+                <th>Сотрудник</th>
+                <th>Стол</th>
+                <th>Бонус</th>
+                <th>Сумма</th>
+                <th>Корзина</th>
+                <th>Печать</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(check, index) in paginated_data(checks)" :key="index">
+                <td>{{ check.date }}</td>
+                <td>{{ check.employee }}</td>
+                <td>{{ check.table }}</td>
+                <td>{{ check.bonus }}</td>
+                <td style="width: 0; text-align: center">{{ check.total }}</td>
+                <td style="width: 0; text-align: center">
+                  <button
+                    class="analytics-info__table-btn"
+                    @click="openCheckBusketModal(check.busket)"
+                  >
+                    <i class="bx bx-cart"></i>
+                  </button>
+                </td>
+                <td style="width: 0; text-align: center">
+                  <button @click="print()" class="analytics-info__table-btn">
+                    <i class="bx bx-printer"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <pagination
+            :totalPages="pageSizeChecks"
+            :currentPage="currentPage"
+            @pagechanged="onPageChange"
+          />
+          <Modal
+            title="Просмотр продуктов чека"
+            v-if="checkBusketModal"
+            @close="
+              checkBusketModal = false;
+              checkBusket = null;
+            "
+          >
+            <div class="analytics-info">
+              <table class="analytics-info__table">
+                <thead align="left">
+                  <tr>
+                    <th>Наименование</th>
+                    <th>Цена</th>
+                    <th>Количество</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(product, index) in checkBusket" :key="index">
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.price }}</td>
+                    <td>{{ product.quantity }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </Modal>
+        </div>
       </div>
     </div>
-
     <Footer> </Footer>
   </div>
 </template>
@@ -292,7 +293,7 @@ export default {
         dataLabels: {
           enabled: true,
           style: {
-            colors: ["#77a648"],
+            colors: ["#5fbd00"],
           },
           background: {
             enabled: true,
@@ -305,7 +306,7 @@ export default {
         },
         stroke: {
           width: 2,
-          colors: ["#77A648"],
+          colors: ["#5fbd00"],
           curve: "smooth",
         },
         grid: {
@@ -337,7 +338,7 @@ export default {
         },
         markers: {
           size: 5,
-          colors: ["#77A648"],
+          colors: ["#5fbd00"],
         },
       },
 
@@ -537,7 +538,7 @@ export default {
     }
   }
   &-info__title--active {
-    background: #77a648;
+    background: #5fbd00;
     color: #fff;
   }
   &-info__table {
@@ -561,20 +562,6 @@ export default {
     &:hover {
       color: #fff;
       background: #77a648;
-    }
-  }
-  .footer {
-    background: #e6e6e6;
-    width: 100%;
-    z-index: 2;
-    position: fixed;
-    justify-content: center;
-    bottom: 0;
-    left: 0;
-    padding-bottom: calc(constant(safe-area-inset-bottom));
-    padding-bottom: calc(env(safe-area-inset-bottom));
-    &-item {
-      margin: 0 14px;
     }
   }
   &-chart {
@@ -625,7 +612,7 @@ export default {
     }
   }
   &-range__item--active {
-    background: #77a648;
+    background: #5fbd00;
     color: #fff;
     span {
       color: #fff;

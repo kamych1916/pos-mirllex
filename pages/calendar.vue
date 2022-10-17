@@ -70,7 +70,7 @@
               <tr v-for="(product, index) in modalInfo.busket" :key="index">
                 <td>{{ product.name }}</td>
                 <td>{{ product.price }}</td>
-                <td>{{ product.quantity }}</td>
+                <td>{{ product.count }}</td>
               </tr>
             </tbody>
           </table>
@@ -79,7 +79,7 @@
         <button
           type="button"
           class="calendar-modal__btn"
-          style="width: 100%; background-color: #77a648; color: #fff"
+          style="width: 100%; background-color: #5fbd00; color: #fff"
           @click="sendBuscket(modalInfo.id, 1, modalInfo)"
         >
           <p>Перейти</p>
@@ -187,10 +187,8 @@ export default {
   overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
-  margin-top: 20px;
   height: 100%;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
+  padding: 20px;
 
   &-container {
     width: 360px;
@@ -199,7 +197,7 @@ export default {
     display: inline-block;
     overflow: auto;
     white-space: nowrap;
-    padding: 0 10px;
+    padding-right: 20px;
 
     @include less-than(tablet) {
       margin-right: 0px;

@@ -485,9 +485,10 @@ export default {
     flex-flow: nowrap column;
     align-items: stretch;
     position: relative;
-    // @include less-than(laptop_l) {
-    //   flex: 3;
-    // }
+    @include less-than(laptop_xl) {
+      flex: 4;
+      width: 80%;
+    }
     @include less-than(laptop) {
       flex: 2;
       width: 72%;
@@ -652,7 +653,6 @@ export default {
       }
     }
   }
-
   &-menu__product-count {
     width: 32px;
     height: 32px;
@@ -760,6 +760,7 @@ export default {
     padding: 10px;
     select,
     input {
+      // color: #5fbd00;
       // background: #f2f2f2;
       cursor: pointer;
       border-bottom: 1px solid #f5f5f5;

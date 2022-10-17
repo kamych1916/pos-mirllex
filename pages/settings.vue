@@ -48,10 +48,11 @@ export default {
   overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
-  margin-top: 20px;
+  // margin-top: 20px;
+  padding: 20px;
   height: 100%;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
+  // padding-bottom: 20px;
+  // margin-bottom: 20px;
 
   &-container {
     width: 360px;
@@ -60,8 +61,8 @@ export default {
     display: inline-block;
     overflow: auto;
     white-space: nowrap;
-    padding: 0 10px;
-
+    // padding: 0 10px;
+    padding-right: 20px;
     @include less-than(tablet) {
       margin-right: 0px;
       width: 100%;
@@ -90,6 +91,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
   }
   &-container__item {
     background: #f2f2f2;
@@ -97,6 +99,7 @@ export default {
     text-align: center;
     padding: 25px 10px;
     margin-top: 20px;
+    cursor: pointer;
   }
 
   &-modal {

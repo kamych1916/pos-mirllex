@@ -6,7 +6,7 @@
       exact-active-class="footer-item--active"
     >
       <span>
-        <i class="bx bx-download"></i>
+        <i class="bx bx-store"></i>
       </span>
     </NuxtLink>
     <NuxtLink
@@ -15,7 +15,7 @@
       exact-active-class="footer-item--active"
     >
       <span>
-        <i class="bx bx-store"></i>
+        <i class="bx bx-download"></i>
       </span>
     </NuxtLink>
     <NuxtLink
@@ -42,7 +42,7 @@
       exact-active-class="footer-item--active"
     >
       <span>
-        <i class="bx bxs-cog"></i>
+        <i class="bx bx-cog"></i>
       </span>
     </NuxtLink>
   </div>
