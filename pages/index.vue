@@ -99,7 +99,11 @@
               "
             >
               <span style="width: 85%">{{ item.name }}</span>
-              <i @click="productDelete(item.id)" class="bx bx-trash"></i>
+              <i
+                @click="productDelete(item.id)"
+                class="bx bx-trash"
+                style="font-size: 18px; cursor: pointer; padding: 10px"
+              ></i>
             </div>
             <div
               style="
@@ -114,7 +118,23 @@
                 <span>{{ item.count }}</span>
                 <i @click="productCountPlus(item)" class="bx bx-plus"></i>
               </div>
-              <span> {{ item.price }} р. </span>
+              <span>
+                <input
+                  style="width: 50px"
+                  type="number"
+                  inputmode="numeric"
+                  :ref="'element' + item.id"
+                  v-model="item.price"
+                  @input="
+                    changePrice(
+                      item.id,
+                      item.price ? (item.price < 0 ? 0 : item.price) : 0
+                    )
+                  "
+                />
+                р.
+              </span>
+              <!-- <span> {{ item.price }} р. </span> -->
             </div>
           </div>
           <div class="order-busket__bag-backdrop"></div>
@@ -307,8 +327,24 @@ export default {
             this.total_bonus = this.storeData.total;
             this.total_sum = this.storeData.subtotal;
             this.orderId = this.storeData.id;
+
+            this.store = res.store;
+            this.store.forEach((category) => {
+              this.busket.forEach((item) => {
+                if (category._id === item.category_id) {
+                  category.products.forEach((product) => {
+                    if (product.id === item.id) {
+                      product.price = item.price;
+                    }
+                  });
+                }
+              });
+            });
+          } else {
+            this.store = res.store;
           }
-          this.store = res.store;
+          this.products = [];
+          this.category_id = null;
           this.tables = res.inputs.tables;
           this.employees = res.inputs.employees;
           this.bonuses = res.inputs.bonuses;
@@ -331,6 +367,7 @@ export default {
       }
     },
     addToBusket(product) {
+      console.log(product, this.total_sum, this.total_bonus);
       if (this.busket.length > 0) {
         let isProductFind = false;
         this.busket.forEach((item) => {
@@ -379,6 +416,7 @@ export default {
         if (product.id === item.id) {
           if (item.is_quantity) {
             if (item.quantity !== product.count) {
+              console.log(item.price);
               this.total_sum += item.price;
               product.count += 1;
             }
@@ -456,6 +494,34 @@ export default {
       } else {
         alert("Корзина пуста");
       }
+    },
+    changePrice(id, price) {
+      let prevPrice;
+      this.products.forEach((product) => {
+        if (product.id === id) {
+          prevPrice = product.price;
+
+          let newPrice = parseInt(price);
+
+          this.busket.forEach((item) => {
+            if (item.id === id) {
+              // console.log(prevPrice, item.count, newPrice);
+              this.total_sum =
+                this.total_sum - prevPrice * item.count + newPrice * item.count;
+              this.total_bonus =
+                this.total_bonus -
+                prevPrice * item.count +
+                newPrice * item.count;
+
+              item.price = newPrice;
+              product.price = item.price;
+              // console.log(product.price, prevPrice, item.count, newPrice);
+
+              this.eventBonus();
+            }
+          });
+        }
+      });
     },
   },
 };
@@ -712,10 +778,20 @@ export default {
     border-radius: 10px;
     margin-bottom: 20px;
     background: #fff;
-    border-top: 2px solid #5fbd00;
+    border: 2px solid #5fbd00;
     border-radius: 12px;
-    box-shadow: 0px 0px 40px rgba(4, 114, 8, 0.08);
+    // box-shadow: 0px 0px 40px rgba(4, 114, 8, 0.08);
     white-space: normal;
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
   }
   &-busket__article-count {
     display: flex;

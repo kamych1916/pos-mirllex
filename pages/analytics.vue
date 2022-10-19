@@ -216,7 +216,7 @@
                   <tr v-for="(product, index) in checkBusket" :key="index">
                     <td>{{ product.name }}</td>
                     <td>{{ product.price }}</td>
-                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.count }}</td>
                   </tr>
                 </tbody>
               </table>
