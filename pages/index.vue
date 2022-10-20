@@ -59,6 +59,7 @@
               products = item.products;
               search = null;
             "
+            :style="{ background: item.color + '2A', color: item.color }"
           >
             {{ item.name }}
           </div>
@@ -69,13 +70,21 @@
             :key="product.id"
             @click="addToBusket(product)"
             class="order-menu__product"
+            :style="{ borderTop: `2px solid ${product.color}` }"
           >
-            <div style="height: 84px; overflow: hidden">
+            <div style="height: 84px; overflow: auto">
               {{ product.name }}
             </div>
             <div style="display: flex; justify-content: space-between">
               <span>
-                <p class="order-menu__product-count" v-if="product.is_quantity">
+                <p
+                  v-if="product.is_quantity"
+                  class="order-menu__product-count"
+                  :style="{
+                    background: product.color + '2A',
+                    color: product.color,
+                  }"
+                >
                   {{ product.quantity }}
                 </p>
               </span>
@@ -90,6 +99,7 @@
             v-for="item in busket"
             :key="item.id"
             class="order-busket__article"
+            :style="{ borderColor: item.color }"
           >
             <div
               style="
@@ -114,13 +124,24 @@
               "
             >
               <div class="order-busket__article-count">
-                <i @click="productCountMinus(item)" class="bx bx-minus"></i>
+                <i
+                  @click="productCountMinus(item)"
+                  class="bx bx-minus"
+                  :style="{ background: item.color }"
+                ></i>
                 <span>{{ item.count }}</span>
-                <i @click="productCountPlus(item)" class="bx bx-plus"></i>
+                <i
+                  @click="productCountPlus(item)"
+                  class="bx bx-plus"
+                  :style="{ background: item.color }"
+                ></i>
               </div>
               <span>
                 <input
-                  style="width: 50px"
+                  :style="{
+                    width: '50px',
+                    borderBottom: `1px solid ${item.color}`,
+                  }"
                   type="number"
                   inputmode="numeric"
                   :ref="'element' + item.id"
@@ -186,18 +207,19 @@
               {{ item.label }}
             </option>
           </select>
-
-          <div style="display: flex; justify-content: space-between">
-            <button
-              type="button"
-              class="order-busket__checkout-btn"
-              style="width: 100%; margin-right: 30px"
-              @click="sendbusket()"
-            >
-              <p>оформить</p>
-              <!-- <i class="bx bx-check"></i> -->
-              <div style="font-family: `Nunito-Bold`">{{ total_bonus }} р.</div>
-            </button>
+          <div
+            style="
+              margin: 10px 5px 0;
+              display: flex;
+              justify-content: space-between;
+            "
+          >
+            <p>Итого:</p>
+            <div style="font-family: `Nunito-Bold`">{{ total_bonus }} р.</div>
+          </div>
+          <div
+            style="margin: 0 5px; display: flex; justify-content: space-between"
+          >
             <button
               style="background: #fff; color: #5fbd00"
               type="button"
@@ -208,6 +230,17 @@
               @click="isReceipt = !isReceipt"
             >
               <i class="bx bx-printer"></i>
+            </button>
+            <button
+              style="width: 100%; margin-left: 10px"
+              type="button"
+              @click="sendbusket()"
+              class="order-busket__checkout-btn"
+            >
+              ОФОРМИТЬ
+              <!-- <p>оформить</p> -->
+              <!-- <i class="bx bx-check"></i> -->
+              <!-- <div style="font-family: `Nunito-Bold`">{{ total_bonus }} р.</div> -->
             </button>
           </div>
         </div>
@@ -671,8 +704,9 @@ export default {
   }
   &-menu__category--active {
     // background: #77a648;
-    background: #5fbd00;
-    color: #fff;
+    // background: #5fbd00;
+    // color: #fff;
+    // box-shadow: 0px 2px 10px rgb(239, 239, 239);
   }
   &-menu__products {
     display: grid;
@@ -792,6 +826,13 @@ export default {
     input[type="number"] {
       -moz-appearance: textfield;
     }
+    input {
+      border-bottom: 1px solid #5fbd00;
+
+      @include less-than(laptop_l) {
+        width: 35px !important;
+      }
+    }
   }
   &-busket__article-count {
     display: flex;
@@ -815,6 +856,10 @@ export default {
         border-top-right-radius: 10px;
         border-bottom-right-radius: 10px;
       }
+
+      @include less-than(laptop_l) {
+        padding: 6px 8px;
+      }
     }
     span {
       width: 55px;
@@ -823,6 +868,9 @@ export default {
       justify-content: center;
       background: #f5f5f5;
       text-align: center;
+      @include less-than(laptop_l) {
+        width: 45px;
+      }
     }
   }
 

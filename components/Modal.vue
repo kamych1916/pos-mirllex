@@ -119,6 +119,11 @@ export default {
     cursor: pointer;
     margin-top: 10px;
   }
+  input[type="color"] {
+    width: 60px;
+    padding: 0;
+    border-radius: 0;
+  }
 }
 
 .modal-close {

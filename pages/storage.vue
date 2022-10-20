@@ -21,21 +21,27 @@
           <div
             v-for="category in categories"
             :key="category._id"
+            @click="getProducts(category._id)"
             :class="[
               'storage-menu__category',
               category._id === category_id
                 ? 'storage-menu__category--active'
                 : null,
             ]"
-            @click="getProducts(category._id)"
+            :style="{
+              background: category.color + '2A',
+              color: category.color,
+            }"
           >
             <div class="storage-menu__category-wrapper">
               <i
                 @click.stop="
                   modal_change_category = true;
                   form_category.name = category.name;
+                  form_category.color = category.color;
                   form_category.id = category._id;
                 "
+                style="color: #000"
                 class="bx bx-cog storage-menu__category-icon"
               ></i>
             </div>
@@ -92,6 +98,8 @@
       <form @submit.prevent="createCategory()">
         <span> Название </span>
         <input v-model="form_category.name" type="text" required />
+        <span> Цвет категории </span>
+        <input v-model="form_category.color" type="color" required />
         <button type="submit" style="width: 100%">Создать</button>
       </form>
     </Modal>
@@ -144,6 +152,8 @@
       <form @submit.prevent="changeCategory()">
         <span> Название </span>
         <input v-model="form_category.name" type="text" required />
+        <span> Цвет категории </span>
+        <input v-model="form_category.color" type="color" required />
         <div style="display: flex; justify-content: space-between; gap: 20px">
           <button @click="deleteCategory()" type="button" style="width: 100%">
             Удалить
@@ -222,6 +232,7 @@ export default {
 
       form_category: {
         name: null,
+        color: null,
         id: null,
       },
       form_product: {
@@ -299,7 +310,9 @@ export default {
             (obj) => obj._id == this.form_category.id
           );
           let categoryName = this.form_category.name;
+          let categoryColor = this.form_category.color;
           this.categories[objIndex].name = categoryName;
+          this.categories[objIndex].color = categoryColor;
           this.modal_change_category = false;
         })
         .catch((err) => {
