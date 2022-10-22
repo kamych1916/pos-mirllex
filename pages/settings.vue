@@ -1,9 +1,15 @@
 <template>
   <div class="wrapper">
-    <div class="settings" v-if="isLoadData">
-      <settings-tables :data="tables"></settings-tables>
-      <settings-employees :data="employees"></settings-employees>
-      <settings-bonuses :data="bonuses"></settings-bonuses>
+    <div class="add">
+      <div class="add-container">
+        <nuxt-link to="/add">
+          <div class="add-container__title">Добавить элементы системы</div>
+        </nuxt-link>
+
+        <div @click="logOut()" class="add-container__title">
+          Выйти из аккаунта
+        </div>
+      </div>
     </div>
     <Footer style="margin-top: auto"></Footer>
   </div>
@@ -12,101 +18,51 @@
 <script>
 export default {
   middleware: ["auth"],
-  data() {
-    return {
-      bonuses: [],
-      employees: [],
-      tables: [],
-      isLoadData: false,
-    };
-  },
-  fetchOnSever: false,
-  fetch() {
-    this.getData();
-  },
   methods: {
-    getData() {
-      this.$axios
-        .$get("settings")
-        .then((res) => {
-          this.bonuses = res.bonuses;
-          this.employees = res.employees;
-          this.tables = res.tables;
-          this.isLoadData = true;
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+    async logOut() {
+      await this.$auth.logout();
     },
   },
 };
 </script>
 
 <style lang="scss">
-.settings {
-  overflow-x: auto;
-  overflow-y: hidden;
-  white-space: nowrap;
-  // margin-top: 20px;
+.add {
   padding: 20px;
   height: 100%;
-  // padding-bottom: 20px;
-  // margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   &-container {
     width: 360px;
+
     min-height: 100%;
     max-height: 100%;
-    display: inline-block;
-    overflow: auto;
-    white-space: nowrap;
-    // padding: 0 10px;
     padding-right: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     @include less-than(tablet) {
       margin-right: 0px;
       width: 100%;
     }
+    a {
+      display: block;
+      margin-bottom: 20px;
+      width: 100%;
+    }
   }
   &-container__title {
+    cursor: pointer;
     width: 100%;
     border-radius: 12px;
-    background: #e6e6e6;
+    background: #5fbd00;
+    color: #fff;
     padding: 14px;
     text-align: center;
     position: sticky;
-  }
-  &-container__wrapper {
-    margin-top: 16px;
-    width: 100%;
-    padding: 16px;
-    background: #e6e6e6;
-    border-radius: 12px;
-  }
-  &-container__add {
-    background: #f2f2f2;
-    border-radius: 12px;
-    text-align: center;
-    padding: 15px 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-  }
-  &-container__item {
-    background: #f2f2f2;
-    border-radius: 12px;
-    text-align: center;
-    padding: 25px 10px;
-    margin-top: 20px;
-    cursor: pointer;
-  }
-
-  &-modal {
-    span {
-      font-size: 14px;
-      opacity: 0.5;
-    }
   }
 }
 </style>

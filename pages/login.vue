@@ -49,7 +49,7 @@ export default {
           data: this.user,
         });
         this.$auth.setUserToken(data.access_token, true);
-        this.$router.push("/");
+        this.$router.push("/busket");
       } catch (err) {
         if (err.response) if (err.response.status === 409) this.erorr = true;
       }

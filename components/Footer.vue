@@ -1,7 +1,7 @@
 <template>
   <div class="footer">
     <NuxtLink
-      to="/"
+      to="/busket"
       class="footer-item"
       exact-active-class="footer-item--active"
     >
